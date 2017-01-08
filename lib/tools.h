@@ -7,6 +7,7 @@
 #define __TOOLS_H
 #define TRUE 1
 #define FALSE 0
+#define MS_FOR_25_FPS 40000
 
 int consoleIndex;
 

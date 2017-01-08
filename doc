@@ -1,0 +1,163 @@
+
+-----------------History--------------
+
+Graphik:	mksprite 	BPP von PNG, mskprite command und display_init müssen übereinstimmen
+		gfx_scale	Funktioniert nur auf 32-BIT (Farbauflösung)
+				Wichtig: int in rgba Bestandteile auflösen, diese einzeln addieren, dann zusammenfuegen
+		Triangle-fill:	http://www-users.mat.uni.torun.pl/~wrona/3d_tutor/tri_fillers.html
+		Rotation cut:	https://books.google.co.uk/books?id=dOz-UK8Fl_UC&pg=PA154&lpg=PA154&dq=killer+game+programming+clipping+rotating&source=bl&ots=afigZq0EgK&sig=psJY77iF37F9MeMX9F77Y3Y7kZo&hl=en&sa=X&ei=GboDT96gIsLn8QP6xenaDA#v=onepage&q&f=false
+
+Audio:		mikmok 		in der makefile extra angeben. Doku in der libdragon doc nicht enthalten - siehe mikmod.sourceforge.net
+				in der makefile in folgender Reihenfolge bei den Links angeben:
+				LINK_FLAGS = -L$(ROOTDIR)/lib -L$(ROOTDIR)/mips64-elf/lib -lmikmod -ldragon -lc -lm -ldragonsys -Tn64ld.x 
+		MODULES		Einfache Wiedergabe einer .mod Sound-Datei - Problem: Nicht moeglich, mehrere Sounds zugleich wiederzugeben
+		SAMPLES		Komplexere Wiedergabe von mono .wav Dateien - Problem: Rauschen bei mono-wav files und Ladeerrors bei stereo-wav files
+		Doku		Teile der Doku nur noch in Webarchiven zu finden
+
+Compiler:	make		Programm wird nicht komplett neu erstellt - Assets stimmen nicht immer -> Verwirrung, merkwürdige Fehler
+					- folgende Dateien IMMER vor Kompilieren löschen:
+						- n64forever.bin
+						- n64forever.elf
+						- n64forever.o
+						- n64forever.v64
+						- spritemap.dfs
+				lm vor lc linken! (fmod funktioniert sonst nicht)
+				shell script dafür geschrieben -> sh clean
+		clean		Wechseln zwischen source-dateien beim Kompilieren vereinfacht
+				clean nimmt 1 parameter entgegen, dieser wird in der make datei als variable gesetzt
+					-> diese variable bestimmt den namen der programmdatei und verwendeten source-datei
+				beispiel: clean application (kompiliert application.c zu application.v64)
+Emulator: 			Crash, Graphik, Controller
+Windows Bootcrash:		Ubuntu 10 unter Virtualbox
+				Dateien wiederherstellen (Wiederherstellungspunkt suchen)
+				Kopie der Virtualbox - funktioniert nicht
+				Änderung der UUID via cmd
+Text output (debugging)		Pro Zeile 32 Zeichen! Neue Zeile danach
+RotateByDeg			Nicht umgesetzt, 2 Varianten: Funktioniert aber mit schwarzen Löchern (müsste man zwischen interpolieren,
+													Löcher finden etc, zu aufwending
+													stattdessen spritemaps
+Echte Hardware:			Bis 20.11.16 nur auf Emulator
+				Habe Fernseher gefunden (mit Scard Anschluss)
+				Kann Nintendo nicht an Fernseher knüpfen (verbinden ja, aber nicht auf Eingang umschalten).
+				Fernseher hat keine Knöpfe zum Umschalten, keine Fernbedienung vorhanden.
+				Versucht, Android-Apps per IR zu verwenden - Fehlanzeige.
+				Inzwischen beschreibbare Cartridge angekommen - Suche nach SD-Karte
+				Neuen Fernseher gefunden (im MoCap), kann angeschlossen werden! Gibt allerdings keinen Ton ab.
+				Boxen gefunden, kann sie direkt anschließen.
+				Fernseher zeigt bei Everdrive nur schwarzes Bild, normale Nintendo-Spiele funktionieren
+				Schalte winzigen PIN-Schalter in der SD-Karten Öffnung um (von NTSC auf PAL) -> BILD!!!
+				Everdrive gibt Fehlermeldung, dass das EverdriveOS nicht gefunden werden kann.
+				Lade mir neueste EverdriveOS Version herunter, richte geforderte Ordnerstruktur an - Selbe Fehlermeldung
+				Befürchte Hardwaredefekt
+				Formatiere SD-Karte, entpacke mit 7-Zip direkt in Ordner
+				Selber Fehler
+				Versuche ältere OS Version (ist ja auch ältere Everdrive-Hardware)
+				Selber Fehler
+				Baue SD-Karte aus Telefon ein, packe Everdrive-OS hinzu
+				LÄUFT!! (sorry Smartphone, Schäbige 8GB müssen ab jetzt reichen ;( )
+				Image-Ghosting, wtf
+				Recherchiere - schalte im EverdriveOS-Menü von Default auf m-PAL - selber Fehler
+				Schalte auf PAL - Kein Ghosting mehr
+				Neues Problem: Bild an allen Seiten abgeschnitten, volle Auflösung wird nicht ausgenutzt, wtf
+				WICHTIG: Keine Koordinaten außerhalb des Bildes ansteuern!
+				globale Variablen ZERO_X, ZERO_Y, MAX_X, MAX_Y, RES_X, RES_Y um auf nutzbare Pixel einzuschränken
+				--
+				Nutze Gummihandschuh im Umgang mit der Everdrive Cartridge & N64 um Stromschläge zu vermeiden
+##############################################################################################################################################################################################################
+Controller struct:		C_up, C_down, C_right, C_left -> gelbe Knöpfe rechts
+				up, down, right, left -> graue Knöpfe rechts
+				
+
+-----------------------Code-------------------------
+
+|=				// a|=b ist das gleiche wie a = (a|b)
+
+mikmok refence:			http://mikmod.sourceforge.net/doc/mikmod-3.3.10.html#Function-Reference
+Audio via mod files:		audiodatei mit openmpt konvertieren
+header-files hinzufügen		unter mips64-elf/include einfügen -> funktionen direkt implementieren! (hier unter extention)
+Kniffliger Pointer-bug:		gfx_sprite_Rotate() nimmt das zu rotierende Bild, speichert die rotierte Form im return pointer und, so gewollt, löscht das Original
+				um Arbeit zu sparen, wird bei einer Rotation um ein ganzzahliges Vielfaches von 360 Grad einfach das Original zurückgeliefert.
+				Wird nun das Original zurückgeliefert, verweisen sowohl der alte, als auch der neue Pointer auf dieselbe Adresse. Löscht man einen, dann auch den anderen.
+				Um dies zu verhindern liefere ich nicht mehr bei einer nicht-Rotation das Originalbild, sondern eine Kopie des Originalbildes zurück.	
+
+
+--------------------todo---------------------------
+redo rotations
+demos fertigstellen
+text skalieren
+SoundInterface
+fps lock (25)
+-----------------funktioniert---------------------
+sprites rotieren um n deg (!=0)
+alpha-werte
+unfreiwilliger Graphikeffekt: Whirl (fehlgeschlagene Rotation)
+sprites rotieren um int n*90deg
+sprites skalieren (nearest neighbour, billinear)
+Sprites
+Text
+2 Controller Input
+Sound
+Performance anzeige				tools_show(display, 1) // 1 steht für debug-modus on
+Horizontal und Vertikal flippen
+debug-console
+unfuck input mess (immer mal wieder neu einstellen)
+spritemaps
+
+--------------bugs----------------------------
+scaling border bug (only slight, not important)
+
+----------------------potentielle optimierung------------------
+beim schleifendurchlauf bei sprites für das Schlüsselwort register verwenden? 
+unroll loops?
+put header functions into code every time?
+gfx_scale - billinear auf color structs verzichten?
+lerp ?? interpolation
+nur neu zeichnen, was aktualisiert werden muss
+90deg rotation - keine neue Instanz erzeugen
+triangles immer in richtiger Reihenfolge definieren, nicht erst beim Zeichnen sortieren!
+
+--------------------nice to have--------------------
+debugMessages ringBuffer
+sprites skalieren - bicubic
+
+
+--------------präsi----------------
+version = 420
+rotation:
+	Ansatz 1 - vorwärts ->
+		für jedes Urpsrungspixel neue Koordinaten berechnen
+		vorteil: funktioniert ;)
+		nachteil: coordinaten werden gerundet (sin, cos) -> 1,4 2,5 -> 2 bleibt leer
+			-> manche Pixel bleiben schwarz -> lücken (es gibt keine halben Pixel, Pixel drehen sich nicht mit)
+				-> aus glatter linie wird treppe -> evtl antialiasing in der Zukunft
+				-> zurück zum Problem: Lücken!
+			außerdem manchmal Ecken abgeschnitten (Bildumfang ändert sich mit rotation)
+	Ansatz 2 - rückwärts ->
+		für jedes neue Pixel den besten passenden Ursprung suchen
+		vorteil: besser ;)
+		nachteil: zu blöd
+			problem: Kanten werden extrem abgeschnitten
+			Lösung: Bild viel größer anlegen, mehr Platz in alle Richtungen
+				problem: Bild wird viel zu groß
+					Lösung: xMin, yMin, xMax, yMax merken -> zwischenraum berechne
+					problem: funktioniert nicht - Bildverschiebung nicht absehbar (blind vergrößern funzt nicht immer,
+													müsste hart übertreiben)
+						Lösung: Prozedur 2x durchlaufen, beim ersten mal Pixel nicht setzen, sondern pro Zeile das Minimum und Maximum (entlang x-Achse) merken ->
+							von allen Maxima das Minimum heraussuchen (das linkeste Pixel der rechten kante) <- vom Ursprungsbild aus!
+												  (das rechteste Pixel der linken kante) 													  (VISUALISIEREN!)
+							Idee: Ich sehe, wie weit ich nach links, bzw. rechts verschieben muss
+								FUNKTIONIERT! aber nur 1 mal, danach crash
+	Also zurück zu Ansatz 1
+		probleme: 	Ecken manchmal abgeschnitten (aber schwächer und in anderem Muster (nur äußere Ecken, nicht Hälfte oder mehr)
+				coordinaten werden gerundet (sin, cos), daher lücken (gibt keine halben Pixel) -> schwarze Punkte
+				Lösung zu 1.: Lösung aus Ansatz zwei -> voila, funktioniert!
+				Lösung zu 2.: Interpolation -> äußere 8 Pixel nehmen, durchschnitt, voila
+						Zu Beachten: 	- Schwarze Pixel zählen nicht als nachbarn! (zu durchschnittsberechnung gültige nachbarn zählen)
+								- Nur Interpolieren, wenn mehr als 4 Nachbarn (erst dann umgeben)
+
+				Lösung nicht perfekt: 	Stetiger Informationsverlust (stetiges Interpolieren, bei kontinuierlicher Bewegung bleiben iwann nur i-Werte übrig.
+							Will man Info-Verlust verhindern -> original zwischenspeichern, neu rotieren (aufaddierter Winkel)
+							ODER Spritemaps nehmen (keine Rotationsprozedur notwendig (Performance), dafür mehr Speicherverbrauch & nicht dynamisch
+
+
+

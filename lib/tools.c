@@ -50,6 +50,14 @@ void tools_init(char *ver, display_context_t d)
 	char msg[32];
 	sprintf(msg, "v%s", ver);
 	tools_print(msg);
+	
+}
+
+void tools_frameUpdate()
+{
+	
+	tools_print("FRAME UPDATE!");
+	
 }
 
 void tools_update()

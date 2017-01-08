@@ -533,7 +533,7 @@ void gfx_drawMergedSprite_stride(display_context_t display, sprite_t* sprite, ui
 	int theight = sprite->height / sprite->vslices;
 	int numTiles = sprite->vslices * sprite->hslices;
 	
-	uint16_t *sp_data = (uint16_t *)sprite->data;
+	uint16_t *data = (uint16_t *)sprite->data;
 	
 	if(offset < numTiles) // UPPER
 	{
@@ -547,14 +547,15 @@ void gfx_drawMergedSprite_stride(display_context_t display, sprite_t* sprite, ui
 
 			for( int xp = tx; xp < tx + twidth; xp++ )
 			{
-				uint16_t compressedPixel = (sp_data[xp + idxByRow]);
+				uint16_t compressedPixel = data[idxByRow + xp];
 				
-				uint16_t uncompressedPixel = (compressedPixel & MASK_R1) 
-											| ((compressedPixel & MASK_G1) >> 1)
-											| (compressedPixel & MASK_B1)
-											| ((compressedPixel & MASK_A1) >> 1);
-											
-				graphics_draw_pixel(display, x + xp - tx, y + yp - ty, uncompressedPixel);
+				uint8_t r = ((compressedPixel >> 6) & 0b11000000);
+				uint8_t g = ((compressedPixel >> 2) & 0b11100000);
+				uint8_t b = ((compressedPixel << 4) & 0b11000000);
+				uint8_t a = (compressedPixel & 0b1000000000000000) == 0 ? 0 : 255;
+
+				uint32_t uncompressedPixel = (a >> 7) | (r << 8) | (g << 3) | b >> 2;
+				graphics_draw_pixel_trans(display, x + xp, y + yp, uncompressedPixel);
 			}
 		}
 		tools_print("UP");
@@ -571,23 +572,23 @@ void gfx_drawMergedSprite_stride(display_context_t display, sprite_t* sprite, ui
 
 			for( int xp = tx; xp < tx + twidth; xp++ )
 			{
-				uint16_t compressedPixel = (sp_data[xp + idxByRow]);
+				uint16_t compressedPixel = data[idxByRow + xp];
 				
-				uint16_t uncompressedPixel = ((compressedPixel & MASK_R2)  << 2)
-											| ((compressedPixel & MASK_G2) << 2)
-											| ((compressedPixel & MASK_B2) << 2)
-											| ((compressedPixel & MASK_A2));
-											
-				graphics_draw_pixel(display, x + xp - tx, y + yp - ty, uncompressedPixel);
+				uint8_t r = ((compressedPixel >> 4) & 0b11000000);
+				uint8_t g = ((compressedPixel << 1) & 0b11100000);
+				uint8_t b = ((compressedPixel << 6) & 0b11000000);
+				uint8_t a = (compressedPixel & 0b0100000000000000) == 0 ? 0 : 255;
+
+				uint32_t uncompressedPixel = (a >> 7) | (r << 8) | (g << 3) | b >> 2;
+				graphics_draw_pixel_trans(display, x + xp, y + yp, uncompressedPixel);
 			}
 		}
-		tools_print("UP");
+		tools_print("LOW");
 	}
 }
 
 void gfx_drawMergedSprite(display_context_t display, sprite_t* sprite, uint8_t x, uint8_t y, uint8_t layer)
 {
-	char msg[32];
 	uint16_t *data = (uint16_t *)sprite->data;
 	if(layer == UPPER_LAYER)
 	{
@@ -599,17 +600,12 @@ void gfx_drawMergedSprite(display_context_t display, sprite_t* sprite, uint8_t x
 			{
 				uint16_t compressedPixel = data[idxByRow + x0];
 				
-				uint16_t uncompressedPixel = 	  (compressedPixel & MASK_R1)
-												| ((compressedPixel & MASK_G1) >> 1)
-												| (compressedPixel & MASK_B1)
-												| ((compressedPixel & MASK_A1) >> 1);
-				if(y0 == 100 && x0 == 100)
-				{
-					sprintf(msg, "compressed: %u",  (unsigned int)compressedPixel);
-					tools_print(msg);
-					sprintf(msg, "uncompressed: %u",  (unsigned int)uncompressedPixel);
-					tools_print(msg);
-				}
+				uint8_t r = ((compressedPixel >> 6) & 0b11000000);
+				uint8_t g = ((compressedPixel >> 2) & 0b11100000);
+				uint8_t b = ((compressedPixel << 4) & 0b11000000);
+				uint8_t a = (compressedPixel & 0b1000000000000000) == 0 ? 0 : 255;
+
+				uint32_t uncompressedPixel = (a >> 7) | (r << 8) | (g << 3) | b >> 2;
 				graphics_draw_pixel_trans(display, x + x0, yCoord, uncompressedPixel);
 			}
 		}
@@ -622,17 +618,13 @@ void gfx_drawMergedSprite(display_context_t display, sprite_t* sprite, uint8_t x
 			for(int x0 = 0; x0 < sprite->width; x0++)
 			{
 				uint16_t compressedPixel = data[idxByRow + x0];
-				uint16_t uncompressedPixel = 	  ((compressedPixel & MASK_R2) << 2)
-												| ((compressedPixel & MASK_G2) << 2)
-												| ((compressedPixel & MASK_B2) << 2)
-												| (compressedPixel & MASK_A2);
-				if(y0 == 100 && x0 == 100)
-				{
-					sprintf(msg, "compressed: %u",  (unsigned int)compressedPixel);
-					tools_print(msg);
-					sprintf(msg, "uncompressed: %u",  (unsigned int)uncompressedPixel);
-					tools_print(msg);
-				}
+				
+				uint8_t r = ((compressedPixel >> 4) & 0b11000000);
+				uint8_t g = ((compressedPixel << 1) & 0b11100000);
+				uint8_t b = ((compressedPixel << 6) & 0b11000000);
+				uint8_t a = (compressedPixel & 0b0100000000000000) == 0 ? 0 : 255;
+
+				uint32_t uncompressedPixel = (a >> 7) | (r << 8) | (g << 3) | b >> 2;
 				graphics_draw_pixel_trans(display, x + x0, yCoord, uncompressedPixel);
 			}
 		}
