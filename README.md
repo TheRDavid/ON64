@@ -2,3 +2,8 @@
 Built on top of libdragon, encapsulates functions to aid game development for the Nintendo64
 
 Progress: http://funblerer.blogspot.de/
+
+To use merged sprites:
+- Get the ImageMerger: https://github.com/TheRDavid/ImageMerge to merge two image files into 1
+- Replace mksprite.c inside your libdragon/tools/mksprite folder with the one inside the root folder of this repo
+- Recompilce mksprite (use -16 as parameter for merging instead of 16, -32 not implemented yet cuz lazy)
