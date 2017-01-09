@@ -7,4 +7,4 @@
 *.wav
 *.mod
 MAKEFILE
-*.directory
+.directory
