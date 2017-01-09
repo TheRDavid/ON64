@@ -27,31 +27,7 @@ void write_value( uint8_t *colorbuf, FILE *fp, int bitdepth, int y, int x)
 	uint16_t out;
 	if(merged)
 	{	
-
-		// First two bits of 0 are alpha, the next 4 are red, last two are green
-		// First four bits of 1 are green, last four blue
-
 		out = SWAP_WORD(colorbuf[3] << 8 | colorbuf[0]);
-		if(y == 65 && x == 48)
-			printf("\n%u,%u,%u,%u", colorbuf[0], colorbuf[1], colorbuf[2], colorbuf[3]);
-
-
-		/*//printf("\nnew Pixel\n");
-		uint16_t red = colorbuf[0];
-		uint16_t green = colorbuf[1];
-		uint16_t blue = colorbuf[2];
-		uint16_t alpha = colorbuf[3];
-		if(y == 100 && x == 100)
-			printf("\nReading %u, %u, %u, %u\n", (unsigned int)red,(unsigned int) green, (unsigned int)blue,(unsigned int) alpha);
-		red = (((colorbuf[0] >> 4) & 0xF) << 12);
-		green = (((colorbuf[1] >> 2) & 0x3F) << 6);
-		blue = (((colorbuf[2] >> 4) & 0xF) << 2);
-		alpha = (colorbuf[3] >> 6) & 0x3;
-		if(y == 100 && x == 100)
-			printf("\nWriting %u, %u, %u, %u\n", (unsigned int)red, (unsigned int)green, (unsigned int)blue, (unsigned int)alpha);
-		out = SWAP_WORD((red) | (green) | (blue) | alpha);
-		if(y == 100 && x == 100)
-			printf("\nResult: %u\n", (unsigned int)out);*/
 	} else
 	{
 		out = SWAP_WORD((((colorbuf[0] >> 3) & 0x1F) << 11) | (((colorbuf[1] >> 3) & 0x1F) << 6) |
