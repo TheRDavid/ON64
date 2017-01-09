@@ -10,3 +10,5 @@ To use merged sprites:
 - Get the ImageMerger: https://github.com/TheRDavid/ImageMerge to merge two image files into 1
 - Replace mksprite.c inside your libdragon/tools/mksprite folder with the one inside the root folder of this repo
 - Recompile mksprite (use -16 as parameter for merging instead of 16, -32 not implemented yet cuz lazy)
+
+Note: All .c files in the root dir except mksprite.c are test apps not a necessary part of the library. They are half-baked and may not work.
