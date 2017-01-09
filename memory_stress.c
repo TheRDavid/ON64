@@ -76,11 +76,9 @@ int main(void)
 		scroll = 0;
         if( keys.c[0].A )
         {
-            /* Lazy switching */
             scroll = 1;
         } else if( keys.c[0].B )
         {
-            /* Lazy switching */
             scroll = -1;
         }
 
