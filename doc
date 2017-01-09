@@ -115,6 +115,7 @@ lerp ?? interpolation
 nur neu zeichnen, was aktualisiert werden muss
 90deg rotation - keine neue Instanz erzeugen
 triangles immer in richtiger Reihenfolge definieren, nicht erst beim Zeichnen sortieren!
+Animationsframes überblenden (rgb fade, cinematischer, weniger frames noetig?)
 
 --------------------nice to have--------------------
 debugMessages ringBuffer

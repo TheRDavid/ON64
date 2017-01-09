@@ -28,23 +28,21 @@ int main(void)
 	
 	int offset = 0, maxOffset = 23, slice = 0, scroll = 0;
 	
-	//uint16_t textpix = gruesomeDeathSprite->data[gruesomeDeathSprite->width * 50 + 50];
 	
 	// GAME LOOP
 	while(1) 
 	{
 		/* Grab a render buffer */
 		while( !(disp = display_lock()) );
-		graphics_fill_screen( disp, 0 );
+		graphics_fill_screen( disp, 0);
 
 		tools_update();
 		//graphics_draw_sprite_trans(disp, 0, 0, playSprite);
 		gfx_drawMergedSprite_stride(disp, playSprite, 0, 0, offset);
 		
 		if(offset < maxOffset)
-		{
 			offset++;
-		} else
+		else
 		{
 			offset = 0;
 			if(slice == 0)
@@ -72,15 +70,10 @@ int main(void)
 		}
 
 
-        struct controller_data keys = get_keys_down();
+        struct controller_data keys = get_keys_pressed();
 		scroll = 0;
-        if( keys.c[0].A )
-        {
-            scroll = 1;
-        } else if( keys.c[0].B )
-        {
-            scroll = -1;
-        }
+        if( keys.c[0].A ) scroll = 1;
+        else if( keys.c[0].B ) scroll = -1;
 
 		tools_show(disp, 1, scroll);
 	}

@@ -541,11 +541,15 @@ void gfx_drawMergedSprite_stride(display_context_t display, sprite_t* sprite, ui
 		int tx = (offset % sprite->hslices) * twidth;
 		int ty = (offset / sprite->hslices) * theight;
 
-		for( int yp = ty; yp < ty + theight; yp++ ) // loop over tile
+		char msg[35];
+		sprintf(msg, "ty:%d, y:%d", ty, y);
+		tools_print(msg);
+
+		for( int yp = ty; yp < ty + theight; yp++) // loop over tile
 		{
 			const register int idxByRow = yp * sprite->width;
 
-			for( int xp = tx; xp < tx + twidth; xp++ )
+			for(int xp = tx; xp < tx + twidth; xp++)
 			{
 				uint16_t compressedPixel = data[idxByRow + xp];
 				
@@ -566,11 +570,15 @@ void gfx_drawMergedSprite_stride(display_context_t display, sprite_t* sprite, ui
 		int tx = (offset % sprite->hslices) * twidth;
 		int ty = (offset / sprite->hslices) * theight;
 
-		for( int yp = ty; yp < ty + theight; yp++ ) // loop over tile
+		char msg[35];
+		sprintf(msg, "ty:%d, y:%d", ty, y);
+		tools_print(msg);
+
+		for(int yp = ty; yp < ty + theight; yp++) // loop over tile
 		{
 			const register int idxByRow = yp * sprite->width;
 
-			for( int xp = tx; xp < tx + twidth; xp++ )
+			for( int xp = tx; xp < tx + twidth; xp++)
 			{
 				uint16_t compressedPixel = data[idxByRow + xp];
 				
