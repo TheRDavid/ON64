@@ -527,19 +527,19 @@ void gfx_drawTriangle(	display_context_t disp, uint8_t x_0, uint8_t y_0,
 	}
 }
 
-void gfx_drawMergedSprite_stride(display_context_t display, sprite_t* sprite, uint8_t x, uint8_t y, uint8_t offset)
+void gfx_drawMergedSprite_stride(display_context_t display, sprite_t* sprite, uint8_t x, uint8_t y, uint8_t offset) // offset = 4
 {
-	int twidth = sprite->width / sprite->hslices;
-	int theight = sprite->height / sprite->vslices;
-	int numTiles = sprite->vslices * sprite->hslices;
+	int twidth = sprite->width / sprite->hslices; 										// 320
+	int theight = sprite->height / sprite->vslices; 									// 131
+	int numTiles = sprite->vslices * sprite->hslices;									// 16
 	
 	uint16_t *data = (uint16_t *)sprite->data;
 	
 	if(offset < numTiles) // UPPER
 	{
 		// position inside sprite
-		int tx = (offset % sprite->hslices) * twidth;
-		int ty = (offset / sprite->hslices) * theight;
+		int tx = (offset % sprite->hslices) * twidth;									// 4 % 4 -> 0 * 320
+		int ty = (offset / sprite->hslices) * theight;									// 4 / 4 -> 1 * 131
 
 		char msg[35];
 		sprintf(msg, "ty:%d, y:%d", ty, y);
@@ -559,7 +559,7 @@ void gfx_drawMergedSprite_stride(display_context_t display, sprite_t* sprite, ui
 				uint8_t a = (compressedPixel & 0b1000000000000000) == 0 ? 0 : 255;
 
 				uint32_t uncompressedPixel = (a >> 7) | (r << 8) | (g << 3) | b >> 2;
-				graphics_draw_pixel_trans(display, x + xp, y + yp, uncompressedPixel);
+				graphics_draw_pixel_trans(display, x + xp - tx, y + yp - ty, uncompressedPixel);
 			}
 		}
 		tools_print("UP");
@@ -588,7 +588,7 @@ void gfx_drawMergedSprite_stride(display_context_t display, sprite_t* sprite, ui
 				uint8_t a = (compressedPixel & 0b0100000000000000) == 0 ? 0 : 255;
 
 				uint32_t uncompressedPixel = (a >> 7) | (r << 8) | (g << 3) | b >> 2;
-				graphics_draw_pixel_trans(display, x + xp, y + yp, uncompressedPixel);
+				graphics_draw_pixel_trans(display, x + xp - tx, y + yp - ty, uncompressedPixel);
 			}
 		}
 		tools_print("LOW");

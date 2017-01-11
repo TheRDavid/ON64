@@ -22,11 +22,12 @@ int main(void)
 	
 	//sprite_t* bunnySprite = gfx_load_Sprite("bunny_01.sprite");
 	//sprite_t* tmpSprite = gfx_load_Sprite("tmp.sprite");
-	sprite_t* playSprite = gfx_load_Sprite("sAnim0.sprite");
-	playSprite->hslices = 12;
-	playSprite->vslices = 1;
+	sprite_t* playSprite = gfx_load_Sprite("193.sprite");
+	playSprite->hslices = 4;
+	playSprite->vslices = 4;
+	int mapNum = 193;
 	
-	int offset = 0, maxOffset = 23, slice = 0, scroll = 0;
+	int offset = 0, maxOffset = 31, scroll = 0;
 	
 	
 	// GAME LOOP
@@ -44,29 +45,14 @@ int main(void)
 			offset++;
 		else
 		{
+			free(playSprite);
 			offset = 0;
-			if(slice == 0)
-			{
-				slice = 1;
-				free(playSprite);
-				playSprite = gfx_load_Sprite("sAnim1.sprite");
-				playSprite->hslices = 12;
-				playSprite->vslices = 1;
-			} else if(slice == 1)
-			{
-				slice = 2;
-				free(playSprite);
-				playSprite = gfx_load_Sprite("sAnim2.sprite");
-				playSprite->hslices = 12;
-				playSprite->vslices = 1;
-			} else
-			{
-				slice = 0;
-				free(playSprite);
-				playSprite = gfx_load_Sprite("sAnim0.sprite");
-				playSprite->hslices = 12;
-				playSprite->vslices = 1;
-			}
+			mapNum++;
+			char fName[30];
+			sprintf(fName, "%d.sprite", mapNum);
+			playSprite = gfx_load_Sprite(fName);
+			playSprite->hslices = 4;
+			playSprite->vslices = 4;
 		}
 
 
