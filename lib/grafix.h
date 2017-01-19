@@ -64,12 +64,12 @@ typedef struct
 /**
  *  Sets the bit-depth
  */  
-void grafix_init(int bpp);
+void gfx_init(int bpp);
 
 /**
  * Init precalculated sin and cos - values
  */ 
-void initSinCos();
+void gfx_init_sin_cos();
 
 /**
  * Flush hardware operations
@@ -79,7 +79,7 @@ void gfx_finish();
 /**
  * 	return a pointer to a sprite that was loaded from a file called name
  */ 
-sprite_t* gfx_load_Sprite(const char *const name);
+sprite_t* gfx_load_sprite(const char *const name);
 
 /**
  * Scales by the given factor according to the given mode
@@ -90,14 +90,15 @@ sprite_t* gfx_load_Sprite(const char *const name);
  * 
  * returns the new sprite (since it has a new array)
  */ 
-sprite_t* gfx_sprite_Scale(sprite_t* sprite, gfx_scaleMode mode, float factor, int freeOriginal);
+sprite_t* gfx_sprite_scale(sprite_t* sprite, gfx_scaleMode mode, float factor, int freeOriginal);
 
 /**
  * Rotates by degree
  * 
  * returns the new sprite (since the array itself was transformed)
  */ 
-sprite_t* gfx_sprite_Rotate(sprite_t* sprite, int deg, int freeOriginal);
+sprite_t* gfx_sprite_rotate(sprite_t* sprite, int deg, int freeOriginal);
+
 
 /**
  *  Flips the given sprite vertically
@@ -106,7 +107,7 @@ sprite_t* gfx_sprite_Rotate(sprite_t* sprite, int deg, int freeOriginal);
  * 
  *  sprite - the sprite to flip
  */ 
-void gfx_sprite_VFlip(sprite_t *sprite);
+void gfx_sprite_vflip(sprite_t *sprite);
 
 /**
  *  Flips the given sprite horizontally
@@ -115,36 +116,37 @@ void gfx_sprite_VFlip(sprite_t *sprite);
  * 
  *  sprite - the sprite to flip
  */ 
-void gfx_sprite_HFlip(sprite_t *sprite);
+void gfx_sprite_hflip(sprite_t *sprite);
 
 /**
  * Using Bresenham's circle algorithm
  */ 
-void gfx_drawCircle(display_context_t display, uint8_t x, uint8_t y, uint8_t radius, uint16_t color, int8_t fill);
+void gfx_draw_circle(display_context_t display, uint8_t x, uint8_t y, uint8_t radius, uint16_t color, int8_t fill);
 
 /**
  * If fill = 0: Draw Outline
  * Else use graphics_draw_box
  */ 
-void gfx_drawRectangle(display_context_t display, uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint16_t color, int8_t fill);
+void gfx_draw_rectangle(display_context_t display, uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint16_t color, int8_t fill);
 
 /**
  * Just draw a damn triangle
  */ 
-void gfx_drawTriangle(	display_context_t display, uint8_t x0, uint8_t y0,
+void gfx_draw_triangle(	display_context_t display, 
+						uint8_t x0, uint8_t y0,
 						uint8_t x1, uint8_t y1,
 						uint8_t x2, uint8_t y2, 
 						uint16_t color, int8_t fill);
 
-void gfx_drawMergedSprite_stride(display_context_t display, sprite_t* sprite, uint8_t x, uint8_t y, uint8_t offset);
-void gfx_drawMergedSprite(display_context_t display, sprite_t* sprite, uint8_t x, uint8_t y, uint8_t layer);
+void gfx_draw_merged_sprite_stride(display_context_t display, sprite_t* sprite, uint8_t x, uint8_t y, uint8_t offset);
+void gfx_draw_merged_sprite(display_context_t display, sprite_t* sprite, uint8_t x, uint8_t y, uint8_t layer);
 
 /**
  * Draw Textures faster.
  * CAREFUL! - Only up to 4KB !!!
  */ 
-void gfx_draw_sprite_Hardware(sprite_t* sprite, int x, int y, display_context_t display);
-void gfx_draw_sprite_map_Hardware(sprite_t* sprite, int x, int y, display_context_t display);
+void gfx_draw_sprite_hardware(display_context_t display, sprite_t* sprite, int x, int y);
+void gfx_draw_sprite_map_hardware(display_context_t display, sprite_t* sprite, int x, int y);
 
 
 #endif

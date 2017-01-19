@@ -20,14 +20,12 @@ int main(void)
 	static display_context_t disp = 0; 
 	tools_init("2.3", disp);
 	
-	//sprite_t* bunnySprite = gfx_load_Sprite("bunny_01.sprite");
-	//sprite_t* tmpSprite = gfx_load_Sprite("tmp.sprite");
-	sprite_t* playSprite = gfx_load_Sprite("193.sprite");
+	sprite_t* playSprite = gfx_load_sprite("193.sprite");
 	playSprite->hslices = 4;
 	playSprite->vslices = 4;
 	int mapNum = 193;
 	
-	int offset = 0, maxOffset = 31, scroll = 0;
+	int offset = 0, maxOffset = 31, /*loading = FALSE,*/ scroll = 0;
 	
 	
 	// GAME LOOP
@@ -38,8 +36,7 @@ int main(void)
 		graphics_fill_screen( disp, 0);
 
 		tools_update();
-		//graphics_draw_sprite_trans(disp, 0, 0, playSprite);
-		gfx_drawMergedSprite_stride(disp, playSprite, 0, 0, offset);
+		gfx_draw_merged_sprite_stride(disp, playSprite, 0, 0, offset);
 		
 		if(offset < maxOffset)
 			offset++;
@@ -50,7 +47,7 @@ int main(void)
 			mapNum++;
 			char fName[30];
 			sprintf(fName, "%d.sprite", mapNum);
-			playSprite = gfx_load_Sprite(fName);
+			playSprite = gfx_load_sprite(fName);
 			playSprite->hslices = 4;
 			playSprite->vslices = 4;
 		}

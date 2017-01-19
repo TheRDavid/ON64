@@ -24,7 +24,7 @@
 #define MASK_A1 2
 #define MASK_A2 1
 
-void grafix_init(int bpp)
+void gfx_init(int bpp)
 {
 	bitDepth = bpp;
 	GFX_COLOR_BLACK = 1;
@@ -45,7 +45,7 @@ void grafix_init(int bpp)
 	GFX_COLOR_TRANS = 0x0;
 	GFX_COLOR_WHITE = 0xFFFF;
 	GFX_COLOR_YELLOW = 0xFFC1;
-	initSinCos();
+	gfx_init_sin_cos();
 }
 
 int hardwareUsed = 0;
@@ -56,7 +56,7 @@ void gfx_finish()
 	hardwareUsed = 0;
 }
 
-sprite_t* gfx_load_Sprite(const char *const name)
+sprite_t* gfx_load_sprite(const char *const name)
 {
 	int fp = dfs_open(name);
 	sprite_t *newSprite = malloc( dfs_size( fp ) );
@@ -66,7 +66,7 @@ sprite_t* gfx_load_Sprite(const char *const name)
 	return newSprite;
 }
 
-sprite_t* gfx_sprite_Scale(sprite_t* sprite, gfx_scaleMode mode, float factor, int freeOriginal)
+sprite_t* gfx_sprite_scale(sprite_t* sprite, gfx_scaleMode mode, float factor, int freeOriginal)
 {	
 	uint16_t newWidth = (uint16_t) round(sprite->width * factor);
 	uint16_t newHeight = (uint16_t) round(sprite->height * factor);
@@ -225,7 +225,7 @@ sprite_t* gfx_sprite_Scale(sprite_t* sprite, gfx_scaleMode mode, float factor, i
 	return newSprite;
 }
 
-sprite_t* gfx_sprite_Rotate(sprite_t* sprite, int deg, int freeOriginal)
+sprite_t* gfx_sprite_rotate(sprite_t* sprite, int deg, int freeOriginal)
 {
 	while(deg < 0) deg += 360;
 	deg%=360;
@@ -280,7 +280,7 @@ sprite_t* gfx_sprite_Rotate(sprite_t* sprite, int deg, int freeOriginal)
 	return newSprite;
 }
 
-void gfx_sprite_VFlip(sprite_t *sprite)
+void gfx_sprite_vflip(sprite_t *sprite)
 {
 	if(bitDepth == 2)
 	{
@@ -317,7 +317,7 @@ void gfx_sprite_VFlip(sprite_t *sprite)
 	}
 }
 
-void gfx_sprite_HFlip(sprite_t *sprite)
+void gfx_sprite_hflip(sprite_t *sprite)
 {
 	if(bitDepth == 2)
 	{
@@ -360,7 +360,7 @@ void gfx_sprite_HFlip(sprite_t *sprite)
 	}
 }
 
-void gfx_draw_sprite_Hardware(sprite_t* sprite, int x, int y, display_context_t display)
+void gfx_draw_sprite_hardware(display_context_t display, sprite_t* sprite, int x, int y)
 {
 	if(1)
 	{
@@ -375,7 +375,7 @@ void gfx_draw_sprite_Hardware(sprite_t* sprite, int x, int y, display_context_t 
 	rdp_draw_sprite(0, x, y);
 }
 
-void gfx_drawCircle(display_context_t display, uint8_t x0, uint8_t y0, uint8_t radius, uint16_t color, int8_t fill)
+void gfx_draw_circle(display_context_t display, uint8_t x0, uint8_t y0, uint8_t radius, uint16_t color, int8_t fill)
 {
 	int x = radius;
     int y = 0;
@@ -422,7 +422,7 @@ void gfx_drawCircle(display_context_t display, uint8_t x0, uint8_t y0, uint8_t r
 	}
 }
 
-void gfx_drawRectangle(display_context_t display, uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint16_t color, int8_t fill)
+void gfx_draw_rectangle(display_context_t display, uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint16_t color, int8_t fill)
 {
 	if(fill)
 	{
@@ -437,7 +437,7 @@ void gfx_drawRectangle(display_context_t display, uint8_t x, uint8_t y, uint8_t 
 	}
 }
 
-void gfx_drawTriangle(	display_context_t disp, uint8_t x_0, uint8_t y_0,
+void gfx_draw_triangle(	display_context_t disp, uint8_t x_0, uint8_t y_0,
 						uint8_t x_1, uint8_t y_1,
 						uint8_t x_2, uint8_t y_2, 
 						uint16_t color, int8_t fill)
@@ -527,7 +527,7 @@ void gfx_drawTriangle(	display_context_t disp, uint8_t x_0, uint8_t y_0,
 	}
 }
 
-void gfx_drawMergedSprite_stride(display_context_t display, sprite_t* sprite, uint8_t x, uint8_t y, uint8_t offset) // offset = 4
+void gfx_draw_merged_sprite_stride(display_context_t display, sprite_t* sprite, uint8_t x, uint8_t y, uint8_t offset) // offset = 4
 {
 	int twidth = sprite->width / sprite->hslices; 										// 320
 	int theight = sprite->height / sprite->vslices; 									// 131
@@ -595,7 +595,7 @@ void gfx_drawMergedSprite_stride(display_context_t display, sprite_t* sprite, ui
 	}
 }
 
-void gfx_drawMergedSprite(display_context_t display, sprite_t* sprite, uint8_t x, uint8_t y, uint8_t layer)
+void gfx_draw_merged_sprite(display_context_t display, sprite_t* sprite, uint8_t x, uint8_t y, uint8_t layer)
 {
 	uint16_t *data = (uint16_t *)sprite->data;
 	if(layer == UPPER_LAYER)
@@ -639,7 +639,7 @@ void gfx_drawMergedSprite(display_context_t display, sprite_t* sprite, uint8_t x
 	}
 }
 
-void initSinCos()
+void gfx_init_sin_cos()
 {
 	preSin[0] = 0.0;
 	preCos[0] = 1.0;
