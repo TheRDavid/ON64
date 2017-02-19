@@ -1,5 +1,5 @@
 /assets
-/filesystem
+/filesystem*
 /mips64-elf
 /old
 *.v64

@@ -24,6 +24,9 @@
 #define MASK_A1 2
 #define MASK_A2 1
 
+int hardwareUsed = 0;
+int textureSlot = 0;
+
 void gfx_init(int bpp)
 {
 	bitDepth = bpp;
@@ -48,8 +51,6 @@ void gfx_init(int bpp)
 	gfx_init_sin_cos();
 }
 
-int hardwareUsed = 0;
-int textureSlot = 0;
 void gfx_finish()
 {
 	if(hardwareUsed) rdp_detach_display();
@@ -201,10 +202,10 @@ sprite_t* gfx_sprite_scale(sprite_t* sprite, gfx_scaleMode mode, float factor, i
 					if(color1.a == 0) numTrans++;
 					if(color2.a == 0) numTrans++;
 					if(color3.a == 0) numTrans++;
-					if(a4 == 0) numTrans+=2;
-					if(a5 == 0) numTrans+=2;
-					if(a6 == 0) numTrans+=2;
-					if(a7 == 0) numTrans+=2;
+					if(a4 == 0) numTrans += 2;
+					if(a5 == 0) numTrans += 2;
+					if(a6 == 0) numTrans += 2;
+					if(a7 == 0) numTrans += 2;
 					
 				/*	char msg[30];
 					sprintf(msg, "numTrans: %d", numTrans);
@@ -218,8 +219,7 @@ sprite_t* gfx_sprite_scale(sprite_t* sprite, gfx_scaleMode mode, float factor, i
 			}
 		break;
 		
-		default:
-			break;
+		default: break;
 	}
 	if(freeOriginal) free(sprite);
 	return newSprite;
@@ -259,9 +259,9 @@ sprite_t* gfx_sprite_rotate(sprite_t* sprite, int deg, int freeOriginal)
 			int yn = (int) round(xt * sDeg + yt * cDeg) + heightDivBy2;
 			
 			int spriteIndex = yn * sprite->width + xn;
+			int newIdx = row * sprite->width + col;
 			if(spriteIndex >= 0 && spriteIndex < sprite->width * sprite->height)
 			{
-				int newIdx = row * sprite->width + col;
 				
 				// check if distance to center is bigger than radius
 				int dx = abs(widthDivBy2 - xn);
@@ -270,7 +270,8 @@ sprite_t* gfx_sprite_rotate(sprite_t* sprite, int deg, int freeOriginal)
 				
 				if(!(distance > widthDivBy2 && distance > heightDivBy2))
 					newData[newIdx] = oldData[spriteIndex];
-			} else newData[row * sprite->width + col] = 0;
+				else newData[newIdx] = 0;
+			} else newData[newIdx] = 0;
 			
 		}
 	}
@@ -358,21 +359,6 @@ void gfx_sprite_hflip(sprite_t *sprite)
 			}
 		}
 	}
-}
-
-void gfx_draw_sprite_hardware(display_context_t display, sprite_t* sprite, int x, int y)
-{
-	if(1)
-	{
-		rdp_sync(SYNC_PIPE);
-		hardwareUsed = 1;
-		rdp_set_default_clipping();
-		rdp_enable_texture_copy();
-		rdp_attach_display(display);
-	}
-	rdp_sync(SYNC_PIPE);
-	rdp_load_texture(0,0, MIRROR_DISABLED, sprite);
-	rdp_draw_sprite(0, x, y);
 }
 
 void gfx_draw_circle(display_context_t display, uint8_t x0, uint8_t y0, uint8_t radius, uint16_t color, int8_t fill)
@@ -637,6 +623,21 @@ void gfx_draw_merged_sprite(display_context_t display, sprite_t* sprite, uint8_t
 			}
 		}
 	}
+}
+
+void gfx_draw_sprite_hardware(display_context_t display, sprite_t* sprite, int x, int y)
+{
+	if(1)
+	{
+		rdp_sync(SYNC_PIPE);
+		hardwareUsed = 1;
+		rdp_set_default_clipping();
+		rdp_enable_texture_copy();
+		rdp_attach_display(display);
+	}
+	rdp_sync(SYNC_PIPE);
+	rdp_load_texture(0,0, MIRROR_DISABLED, sprite);
+	rdp_draw_sprite(0, x, y);
 }
 
 void gfx_init_sin_cos()

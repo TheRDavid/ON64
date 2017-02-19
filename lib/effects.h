@@ -9,7 +9,7 @@
 /**
  * 	returns the sprite after applying a badass whirl effect
  */ 
-sprite_t* fx_sprite_Whirl(sprite_t* sprite, int deg, int freeOriginal);
+sprite_t* fx_sprite_whirl(sprite_t* sprite, int deg, int freeOriginal);
 
 /**
  *  adds offset to the color values (r,g,b,a)
@@ -18,13 +18,25 @@ sprite_t* fx_sprite_Whirl(sprite_t* sprite, int deg, int freeOriginal);
  *  - Makes completely invisible pixels gray / white!
  *  Don't want all that? - Use fx_sprite_Fade_Alpha() instead
  */ 
-void fx_sprite_Fade(sprite_t* sprite, int offset);
+void fx_sprite_fade(sprite_t* sprite, int offset);
 
 /**
  *  adds offset to the alpha values (only a)
  */ 
-void fx_sprite_Fade_Alpha(sprite_t* sprite, int alphaOffset);
+void fx_sprite_fade_alpha(sprite_t* sprite, int alphaOffset);
 
+/**
+ * Uses the new positions of the four corners of the sprite to distort it.
+ * Point a is at the top left, the others follow in clockwise order.
+ * 
+ * returns the new sprite (since the array itself was transformed)
+ */ 
+sprite_t* fx_sprite_4_point_transform(sprite_t* sprite,
+										int ax, int ay,
+										int bx, int by,
+										int cx, int cy,
+										int dx, int dy,
+										int freeOriginal);
 #endif
 
 

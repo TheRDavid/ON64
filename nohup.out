@@ -1,6 +1,0 @@
-Trying to convert empty KLocalizedString to QString.
-Cannot creat accessible child interface for object:  PlacesView(0x55b3b2618400)  index:  15
-KSambaShare: Could not find smb.conf!
-kf5.kio.core: KLocalSocket(0x55b3b2025d80) Jumbo packet of 44158 bytes
-Cannot creat accessible child interface for object:  PlacesView(0x55e415b1b880)  index:  15
-kf5.kio.core: KLocalSocket(0x55e4155eecd0) Jumbo packet of 44158 bytes

@@ -67,11 +67,6 @@ typedef struct
 void gfx_init(int bpp);
 
 /**
- * Init precalculated sin and cos - values
- */ 
-void gfx_init_sin_cos();
-
-/**
  * Flush hardware operations
  */ 
 void gfx_finish();
@@ -98,7 +93,6 @@ sprite_t* gfx_sprite_scale(sprite_t* sprite, gfx_scaleMode mode, float factor, i
  * returns the new sprite (since the array itself was transformed)
  */ 
 sprite_t* gfx_sprite_rotate(sprite_t* sprite, int deg, int freeOriginal);
-
 
 /**
  *  Flips the given sprite vertically
@@ -138,8 +132,15 @@ void gfx_draw_triangle(	display_context_t display,
 						uint8_t x2, uint8_t y2, 
 						uint16_t color, int8_t fill);
 
+/**
+ * Draw part of a spritemap. Use either the upper or lower layer, allowing twice the number of tiles
+ */ 
 void gfx_draw_merged_sprite_stride(display_context_t display, sprite_t* sprite, uint8_t x, uint8_t y, uint8_t offset);
-void gfx_draw_merged_sprite(display_context_t display, sprite_t* sprite, uint8_t x, uint8_t y, uint8_t layer);
+
+/**
+ * Draw either the upper or lower layer of a merged sprite
+ */ 
+ void gfx_draw_merged_sprite(display_context_t display, sprite_t* sprite, uint8_t x, uint8_t y, uint8_t layer);
 
 /**
  * Draw Textures faster.
@@ -148,6 +149,10 @@ void gfx_draw_merged_sprite(display_context_t display, sprite_t* sprite, uint8_t
 void gfx_draw_sprite_hardware(display_context_t display, sprite_t* sprite, int x, int y);
 void gfx_draw_sprite_map_hardware(display_context_t display, sprite_t* sprite, int x, int y);
 
+/**
+ * Init precalculated sin and cos - values
+ */ 
+void gfx_init_sin_cos();
 
 #endif
 

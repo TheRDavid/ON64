@@ -20,12 +20,9 @@ int main(void)
 	static display_context_t disp = 0; 
 	tools_init("2.3", disp);
 	
-	sprite_t* playSprite = gfx_load_sprite("193.sprite");
-	playSprite->hslices = 4;
-	playSprite->vslices = 4;
-	int mapNum = 193;
+	sprite_t* sprite = gfx_load_sprite("tracer.sprite");
 	
-	int offset = 0, maxOffset = 31, /*loading = FALSE,*/ scroll = 0;
+	int ax = 0, ay = 0, bx = sprite->width, by = 0, cx = bx, cy = sprite->height, dx = 0, dy = cy;
 	
 	
 	// GAME LOOP
@@ -36,28 +33,19 @@ int main(void)
 		graphics_fill_screen( disp, 0);
 
 		tools_update();
-		gfx_draw_merged_sprite_stride(disp, playSprite, 0, 0, offset);
+
+		graphics_draw_sprite(disp, 0, 0, sprite);
 		
-		if(offset < maxOffset)
-			offset++;
-		else
-		{
-			free(playSprite);
-			offset = 0;
-			mapNum++;
-			char fName[30];
-			sprintf(fName, "%d.sprite", mapNum);
-			playSprite = gfx_load_sprite(fName);
-			playSprite->hslices = 4;
-			playSprite->vslices = 4;
-		}
+		
 
 
         struct controller_data keys = get_keys_pressed();
-		scroll = 0;
-        if( keys.c[0].A ) scroll = 1;
+        if( keys.c[0].A ) 
+        {
+            
+        }
         else if( keys.c[0].B ) scroll = -1;
 
-		tools_show(disp, 1, scroll);
+		tools_show(disp, 0, 0);
 	}
 }

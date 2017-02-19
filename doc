@@ -82,11 +82,11 @@ Kniffliger Pointer-bug:		gfx_sprite_Rotate() nimmt das zu rotierende Bild, speic
 
 
 --------------------todo---------------------------
-redo rotations
 demos fertigstellen
 text skalieren
 SoundInterface
 fps lock (25)
+
 -----------------funktioniert---------------------
 sprites rotieren um n deg (!=0)
 alpha-werte
@@ -104,7 +104,7 @@ unfuck input mess (immer mal wieder neu einstellen)
 spritemaps
 
 --------------bugs----------------------------
-scaling border bug (only slight, not important)
+
 
 ----------------------potentielle optimierung------------------
 beim schleifendurchlauf bei sprites für das Schlüsselwort register verwenden? 
@@ -116,6 +116,7 @@ nur neu zeichnen, was aktualisiert werden muss
 90deg rotation - keine neue Instanz erzeugen
 triangles immer in richtiger Reihenfolge definieren, nicht erst beim Zeichnen sortieren!
 Animationsframes überblenden (rgb fade, cinematischer, weniger frames noetig?)
+scaling backward-mapping (also rotating, maybe 4-point-transformation also?)
 
 --------------------nice to have--------------------
 debugMessages ringBuffer

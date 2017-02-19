@@ -18,35 +18,34 @@ int main(void)
 {
 	// INITIALIZE ALL THE THINGS
 	static display_context_t disp = 0; 
-	char *soundFiles[5] =  {"rom://music.mod", "rom://pacman_intro.wav", "rom://pacman_x.wav", "rom://pacman_x_s.wav"};
+	//char *soundFiles[5] =  {"rom://music.mod", "rom://pacman_intro.wav", "rom://pacman_x.wav", "rom://pacman_x_s.wav"};
 	//int SOUND_MUSIC = 0;//, SOUND_EFFECT = 1; //, SOUND_EDD_DOING = 2;
-	tools_init("2.3", disp);
-	sound_init(soundFiles, 4, 4);
-	int numItems = 10;
+	tools_init("2.4", disp);
+	//sound_init(soundFiles, 4, 4);
+	int numItems = 11;
 	
-	sprite_t* sprite1 = gfx_load_Sprite("numbers.sprite");
-	sprite_t* sprite1_O = gfx_load_Sprite("numbers.sprite");
+	sprite_t* sprite1 = gfx_load_sprite("1.sprite");
+	sprite_t* sprite1_O = gfx_load_sprite("1.sprite");
 	
-	sprite_t* sprite2 = gfx_load_Sprite("2.sprite");
-	sprite_t* sprite2_O = gfx_load_Sprite("2.sprite");
+	sprite_t* sprite2 = gfx_load_sprite("2.sprite");
+	sprite_t* sprite2_O = gfx_load_sprite("2.sprite");
 	
-	sprite_t* sprite3 = gfx_load_Sprite("3.sprite");
-	sprite_t* sprite3_O = gfx_load_Sprite("3.sprite");
+	sprite_t* sprite3 = gfx_load_sprite("3.sprite");
+	sprite_t* sprite3_O = gfx_load_sprite("3.sprite");
 	
-	sprite_t* sprite4 = gfx_load_Sprite("4.sprite");
-	sprite_t* sprite4_O = gfx_load_Sprite("4.sprite");
+	sprite_t* sprite4 = gfx_load_sprite("4.sprite");
+	sprite_t* sprite4_O = gfx_load_sprite("4.sprite");
+
+	sprite_t* numberSprite_O = gfx_sprite_scale(gfx_load_sprite("tracer.sprite"), BILINEAR, 0.5f, TRUE);
+	sprite_t* numberSprite = gfx_sprite_scale(gfx_load_sprite("tracer.sprite"), BILINEAR, 0.5f, TRUE);
 	
-	char tempMsg[24];
-	sprintf(tempMsg, "@0,0: %lu", sprite4->data[0]);
-	tools_print(tempMsg);
-	
-	sprite_t* aniSprite = gfx_load_Sprite("1.sprite");
+	sprite_t* aniSprite = gfx_load_sprite("1.sprite");
 	aniSprite->hslices = 12;
 	aniSprite->vslices = 5;
 	int aniStep = 0;
 	int imgX = 0, imgY = 0, degree = 0;
 	
-	char menuItems[11][40] = { 	{"Move"},
+	char menuItems[12][40] = { 	{"Move"},
 								{"Scale"},
 								{"Rotate"},
 								{"Flip"},
@@ -55,7 +54,8 @@ int main(void)
 								{"Sprite"},
 								{"Shapes"},
 								{"Measure"},
-								{"Joystick"}  }; 
+								{"Joystick"},
+								{"Distortion"}  }; 
 								
 
 	int debug = 1;
@@ -68,6 +68,7 @@ int main(void)
 	int numLines = 12;
 	char msgs[numLines][40];
 	int jX = 0, jY = 0;
+
 	for(int i = 0; i < numLines; i++)
 	{
 		strcpy(msgs[i], "xxx");
@@ -95,6 +96,12 @@ int main(void)
 	char shapeNames[6][18] = 	{
 								"Filled Rect", "Outlined Rect", "Filled Circle", "Outlined Circle", "Filled Triangle", "Outlined Triangle"
 							};
+
+	int distortCorners[8] = {0, 0,
+							numberSprite->width, 0, 
+							numberSprite->width, numberSprite->height, 
+							0, numberSprite->height};
+	int selectedCorner = 0;
 	
 	gfx_shape_rectangle rect1, rect2;
 	
@@ -190,31 +197,31 @@ int main(void)
 			
 			if(keys.c[0].up)
 			{
-				sprite1 = gfx_sprite_Scale(sprite1, BILINEAR, 1.2f, 1);
-				sprite2 = gfx_sprite_Scale(sprite2, BILINEAR, 1.2f, 1);
-				sprite3 = gfx_sprite_Scale(sprite3, BILINEAR, 1.2f, 1);
-				sprite4 = gfx_sprite_Scale(sprite4, BILINEAR, 1.2f, 1);
+				sprite1 = gfx_sprite_scale(sprite1, BILINEAR, 1.2f, 1);
+				sprite2 = gfx_sprite_scale(sprite2, BILINEAR, 1.2f, 1);
+				sprite3 = gfx_sprite_scale(sprite3, BILINEAR, 1.2f, 1);
+				sprite4 = gfx_sprite_scale(sprite4, BILINEAR, 1.2f, 1);
 			}
 			if(keys.c[0].down)
 			{ 
-				sprite1 = gfx_sprite_Scale(sprite1, BILINEAR, 0.8f, 1);
-				sprite2 = gfx_sprite_Scale(sprite2, BILINEAR, 0.8f, 1);
-				sprite3 = gfx_sprite_Scale(sprite3, BILINEAR, 0.8f, 1);
-				sprite4 = gfx_sprite_Scale(sprite4, BILINEAR, 0.8f, 1);
+				sprite1 = gfx_sprite_scale(sprite1, BILINEAR, 0.8f, 1);
+				sprite2 = gfx_sprite_scale(sprite2, BILINEAR, 0.8f, 1);
+				sprite3 = gfx_sprite_scale(sprite3, BILINEAR, 0.8f, 1);
+				sprite4 = gfx_sprite_scale(sprite4, BILINEAR, 0.8f, 1);
 			}
 			if(keys.c[0].C_up)
 			{ 
-				sprite1 = gfx_sprite_Scale(sprite1, NEAREST_NEIGHBOUR, 1.2f, 1);
-				sprite2 = gfx_sprite_Scale(sprite2, NEAREST_NEIGHBOUR, 1.2f, 1);
-				sprite3 = gfx_sprite_Scale(sprite3, NEAREST_NEIGHBOUR, 1.2f, 1);
-				sprite4 = gfx_sprite_Scale(sprite4, NEAREST_NEIGHBOUR, 1.2f, 1);
+				sprite1 = gfx_sprite_scale(sprite1, NEAREST_NEIGHBOUR, 1.2f, 1);
+				sprite2 = gfx_sprite_scale(sprite2, NEAREST_NEIGHBOUR, 1.2f, 1);
+				sprite3 = gfx_sprite_scale(sprite3, NEAREST_NEIGHBOUR, 1.2f, 1);
+				sprite4 = gfx_sprite_scale(sprite4, NEAREST_NEIGHBOUR, 1.2f, 1);
 			}
 			if(keys.c[0].C_down)
 			{ 
-				sprite1 = gfx_sprite_Scale(sprite1, NEAREST_NEIGHBOUR, 0.8f, 1);
-				sprite2 = gfx_sprite_Scale(sprite2, NEAREST_NEIGHBOUR, 0.8f, 1);
-				sprite3 = gfx_sprite_Scale(sprite3, NEAREST_NEIGHBOUR, 0.8f, 1);
-				sprite4 = gfx_sprite_Scale(sprite4, NEAREST_NEIGHBOUR, 0.8f, 1);
+				sprite1 = gfx_sprite_scale(sprite1, NEAREST_NEIGHBOUR, 0.8f, 1);
+				sprite2 = gfx_sprite_scale(sprite2, NEAREST_NEIGHBOUR, 0.8f, 1);
+				sprite3 = gfx_sprite_scale(sprite3, NEAREST_NEIGHBOUR, 0.8f, 1);
+				sprite4 = gfx_sprite_scale(sprite4, NEAREST_NEIGHBOUR, 0.8f, 1);
 			}
 			if(keys.c[0].Z) scenario = -1;
 			graphics_draw_sprite_trans( disp, imgX + ZERO_X, imgY + ZERO_Y, sprite1);
@@ -267,9 +274,9 @@ int main(void)
 				free(sprite2);
 				free(sprite3);
 				free(sprite4);
-				sprite2 = gfx_sprite_Rotate(sprite2_O, degree, FALSE);
-				sprite3 = gfx_sprite_Rotate(sprite3_O, degree, FALSE);
-				sprite4 = gfx_sprite_Rotate(sprite4_O, degree, FALSE);
+				sprite2 = gfx_sprite_rotate(sprite2_O, degree, FALSE);
+				sprite3 = gfx_sprite_rotate(sprite3_O, degree, FALSE);
+				sprite4 = gfx_sprite_rotate(sprite4_O, degree, FALSE);
 			}
 			
 			graphics_draw_text(disp, 10+ZERO_X , 190+ZERO_Y , "Use DPad (left / right) to rotate");
@@ -281,31 +288,31 @@ int main(void)
 			graphics_draw_sprite_trans( disp, imgX + ZERO_X, imgY + ZERO_Y, sprite3);
 			graphics_draw_sprite_trans( disp, imgX + ZERO_X + 140, imgY + ZERO_Y + 100, sprite4);
 			
-			gfx_drawRectangle(disp, imgX + ZERO_X + 140, imgY + ZERO_Y, sprite2->width, sprite2->height, GFX_COLOR_RED, FALSE);
-			gfx_drawRectangle(disp, imgX + ZERO_X, imgY + ZERO_Y, sprite3->width, sprite3->height, GFX_COLOR_GREEN, FALSE);
-			gfx_drawRectangle(disp, imgX + ZERO_X + 140, imgY + ZERO_Y + 100, sprite4->width, sprite4->height, GFX_COLOR_BLUE, FALSE);
+			gfx_draw_rectangle(disp, imgX + ZERO_X + 140, imgY + ZERO_Y, sprite2->width, sprite2->height, GFX_COLOR_RED, FALSE);
+			gfx_draw_rectangle(disp, imgX + ZERO_X, imgY + ZERO_Y, sprite3->width, sprite3->height, GFX_COLOR_GREEN, FALSE);
+			gfx_draw_rectangle(disp, imgX + ZERO_X + 140, imgY + ZERO_Y + 100, sprite4->width, sprite4->height, GFX_COLOR_BLUE, FALSE);
 			
-			gfx_drawCircle(disp, imgX + ZERO_X + sprite2->width / 2 + 140, imgY + ZERO_Y + sprite2->height/2, 
+			gfx_draw_circle(disp, imgX + ZERO_X + sprite2->width / 2 + 140, imgY + ZERO_Y + sprite2->height/2, 
 				sprite2->width > sprite2->height ? sprite2->width / 2 : sprite2->height / 2, GFX_COLOR_RED, FALSE);
-			gfx_drawCircle(disp, imgX + ZERO_X + sprite3->width / 2, imgY + ZERO_Y + sprite3->height/2, 
+			gfx_draw_circle(disp, imgX + ZERO_X + sprite3->width / 2, imgY + ZERO_Y + sprite3->height/2, 
 				sprite3->width > sprite3->height ? sprite3->width / 2 : sprite3->height / 2, GFX_COLOR_GREEN, FALSE);
-			gfx_drawCircle(disp, imgX + ZERO_X + sprite4->width / 2 + 140, imgY + ZERO_Y + sprite4->height/2 + 100, 
+			gfx_draw_circle(disp, imgX + ZERO_X + sprite4->width / 2 + 140, imgY + ZERO_Y + sprite4->height/2 + 100, 
 				sprite4->width > sprite4->height ? sprite4->width / 2 : sprite4->height / 2, GFX_COLOR_BLUE, FALSE);
 		} else if(scenario == 3)
 		{
 			if(keys.c[0].A)
 			{
-				gfx_sprite_HFlip(sprite1);
-				gfx_sprite_HFlip(sprite2);
-				gfx_sprite_HFlip(sprite3);
-				gfx_sprite_HFlip(sprite4);
+				gfx_sprite_hflip(sprite1);
+				gfx_sprite_hflip(sprite2);
+				gfx_sprite_hflip(sprite3);
+				gfx_sprite_hflip(sprite4);
 			}
 			if(keys.c[0].B)
 			{
-				gfx_sprite_VFlip(sprite1);
-				gfx_sprite_VFlip(sprite2);
-				gfx_sprite_VFlip(sprite3);
-				gfx_sprite_VFlip(sprite4);
+				gfx_sprite_vflip(sprite1);
+				gfx_sprite_vflip(sprite2);
+				gfx_sprite_vflip(sprite3);
+				gfx_sprite_vflip(sprite4);
 			}
 			graphics_draw_text(disp, 10 +ZERO_X, 190+ZERO_Y , "Use A to HFlip, B to VFlip");
 			if(keys.c[0].Z) scenario = -1;
@@ -319,17 +326,17 @@ int main(void)
 			graphics_draw_text(disp, 10 + ZERO_X, 160 +ZERO_Y , "DPad (up/down) to fade rgb");
 			if(keys.c[0].up)
 			{
-				fx_sprite_Fade(sprite1, 1);
-				fx_sprite_Fade(sprite2, 1);
-				fx_sprite_Fade(sprite3, 1);
-				fx_sprite_Fade(sprite4, 1);
+				fx_sprite_fade(sprite1, 1);
+				fx_sprite_fade(sprite2, 1);
+				fx_sprite_fade(sprite3, 1);
+				fx_sprite_fade(sprite4, 1);
 			}
 			if(keys.c[0].down)
 			{
-				fx_sprite_Fade(sprite1, -1);
-				fx_sprite_Fade(sprite2, -1);
-				fx_sprite_Fade(sprite3, -1);
-				fx_sprite_Fade(sprite4, -1);
+				fx_sprite_fade(sprite1, -1);
+				fx_sprite_fade(sprite2, -1);
+				fx_sprite_fade(sprite3, -1);
+				fx_sprite_fade(sprite4, -1);
 			}
 			if(keys.c[0].Z) scenario = -1;
 			graphics_draw_sprite_trans( disp, imgX + ZERO_X, imgY + ZERO_Y, sprite1);
@@ -349,8 +356,8 @@ int main(void)
 		{
 			keys = get_keys_down();
 			if(keys.c[0].A) aniStep++;
-			if(keys.c[0].C_down) aniSprite = gfx_sprite_Scale(aniSprite, BILINEAR, 0.8f, 1);
-			if(keys.c[0].C_up) aniSprite = gfx_sprite_Scale(aniSprite, BILINEAR, 1.2f, 1);
+			if(keys.c[0].C_down) aniSprite = gfx_sprite_scale(aniSprite, BILINEAR, 0.8f, 1);
+			if(keys.c[0].C_up) aniSprite = gfx_sprite_scale(aniSprite, BILINEAR, 1.2f, 1);
 			aniStep = aniStep > 59 ? 0 : aniStep;
 			graphics_draw_sprite_trans_stride( disp, ZERO_X, ZERO_Y, aniSprite, aniStep);
 			aniStep++;
@@ -379,18 +386,18 @@ int main(void)
 			graphics_draw_text(disp, 120, ZERO_Y + 120, msg2);
 			
 			
-			gfx_drawRectangle(disp, rect1.x, rect1.y, rect1.width, rect1.height, rect1.color, rect1.fill);
-			gfx_drawCircle(disp, circle1.x, circle1.y, circle1.radius, circle1.color, circle1.fill);
-			gfx_drawCircle(disp, circle2.x, circle2.y, circle2.radius, circle2.color, circle2.fill);
-			gfx_drawTriangle(	disp, triangle1.x0, triangle1.y0, 
+			gfx_draw_rectangle(disp, rect1.x, rect1.y, rect1.width, rect1.height, rect1.color, rect1.fill);
+			gfx_draw_circle(disp, circle1.x, circle1.y, circle1.radius, circle1.color, circle1.fill);
+			gfx_draw_circle(disp, circle2.x, circle2.y, circle2.radius, circle2.color, circle2.fill);
+			gfx_draw_triangle(	disp, triangle1.x0, triangle1.y0, 
 								triangle1.x1, triangle1.y1, 
 								triangle1.x2, triangle1.y2, 
 								triangle1.color, triangle1.fill);
-			gfx_drawTriangle(	disp, triangle2.x0, triangle2.y0, 
+			gfx_draw_triangle(	disp, triangle2.x0, triangle2.y0, 
 								triangle2.x1, triangle2.y1, 
 								triangle2.x2, triangle2.y2, 
 								triangle2.color, triangle2.fill);
-			gfx_drawRectangle(disp, rect2.x, rect2.y, rect2.width, rect2.height, rect2.color, rect2.fill);
+			gfx_draw_rectangle(disp, rect2.x, rect2.y, rect2.width, rect2.height, rect2.color, rect2.fill);
 			if(keys.c[0].Z) scenario = -1;
 		} else if(scenario == 8)
 		{
@@ -421,12 +428,72 @@ int main(void)
 				 strcpy(msgs[i-1], msgs[i]);
 			}
 			jX = keys.c[0].x;
-			jY = keys.c[0].y;++count;
+			jY = keys.c[0].y;
+			++count;
 			sprintf(msgs[numLines - 1], "#%d :: \tx: %d - \ty: %d", ++count, jX, jY);
 			for(int i = 0; i < numLines; i++)
 			{
 				graphics_draw_text( disp, 10+ZERO_X, i * 20 + ZERO_Y, msgs[i]);
 			}
+			if(keys.c[0].Z) scenario = -1;
+		} else if(scenario == 10)
+		{
+			keys = get_keys_pressed();
+			if(keys.c[0].up) imgY = imgY > 0+ZERO_X ? imgY-1 : imgY;
+			if(keys.c[0].down) imgY = imgY < 240 ? imgY+1 : imgY;
+			if(keys.c[0].left) imgX = imgX > 0 + ZERO_Y ? imgX-1 : imgX;
+			if(keys.c[0].right) imgX = imgX < 320 ? imgX+1 : imgX;
+			keys = get_keys_down();
+			if(keys.c[0].A) 
+			{
+				if(selectedCorner == 6) selectedCorner = 0;
+				else selectedCorner += 2;
+			} 
+			keys = get_keys_pressed();
+			int x_change = keys.c[0].x;
+			int y_change = -keys.c[0].y;
+
+			if(keys.c[0].B) 
+			{
+				distortCorners[0] = 0;
+				distortCorners[1] = 0;
+				distortCorners[2] = numberSprite_O->width;
+				distortCorners[3] = 0;
+				distortCorners[4] = numberSprite_O->width;
+				distortCorners[5] = numberSprite_O->height;
+				distortCorners[6] = 0;
+				distortCorners[7] = numberSprite_O->height;
+				free(numberSprite);
+				numberSprite = malloc(sizeof(numberSprite_O));
+				memcpy(numberSprite, numberSprite_O, sizeof(numberSprite_O));
+			} 
+
+			if(x_change != 0 || y_change != 0)
+			{
+				free(numberSprite);
+				numberSprite = fx_sprite_4_point_transform(numberSprite_O,
+															distortCorners[0], distortCorners[1],
+															distortCorners[2], distortCorners[3],
+															distortCorners[4], distortCorners[5],
+															distortCorners[6], distortCorners[7],
+															FALSE);
+			} 
+
+			distortCorners[selectedCorner] += x_change;
+			distortCorners[selectedCorner + 1] += y_change;
+			char msg[30];
+			sprintf(msg, "@0x0: %lu", numberSprite->data[0]);
+			tools_print(msg);
+			graphics_draw_sprite_trans( disp, imgX + ZERO_X, imgY + ZERO_Y, numberSprite);
+			graphics_draw_text(disp, 10 +ZERO_X, 140 +ZERO_Y, "A: Switch Corner");
+			graphics_draw_text(disp, 10 +ZERO_X, 160 +ZERO_Y, "B: Reset");
+
+			graphics_draw_box_trans(disp, 
+					ZERO_X + distortCorners[selectedCorner] - 2, 
+					ZERO_Y + distortCorners[selectedCorner + 1] - 2,
+					4, 4, 
+					GFX_COLOR_RED);
+
 			if(keys.c[0].Z) scenario = -1;
 		} else
 		{
