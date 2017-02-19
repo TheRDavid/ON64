@@ -29,14 +29,13 @@ void fx_sprite_fade_alpha(sprite_t* sprite, int alphaOffset);
  * Uses the new positions of the four corners of the sprite to distort it.
  * Point a is at the top left, the others follow in clockwise order.
  * 
- * returns the new sprite (since the array itself was transformed)
+ * updates dest, no changes will be applied to source
  */ 
-sprite_t* fx_sprite_4_point_transform(sprite_t* sprite,
+uint16_t fx_sprite_4_point_transform(sprite_t* source, sprite_t* dest,
 										int ax, int ay,
 										int bx, int by,
 										int cx, int cy,
-										int dx, int dy,
-										int freeOriginal);
+										int dx, int dy);
 #endif
 
 

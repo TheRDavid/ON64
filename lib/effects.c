@@ -78,27 +78,20 @@ void fx_sprite_fade_alpha(sprite_t* sprite, int alphaOffset)
 	}
 }
 
-sprite_t* fx_sprite_4_point_transform(sprite_t* sprite,
+uint16_t fx_sprite_4_point_transform(sprite_t* source, sprite_t* dest,
 										int ax, int ay,
 										int bx, int by,
 										int cx, int cy,
-										int dx, int dy,
-										int freeOriginal)
+										int dx, int dy)
 {
-	uint16_t *oldData = (uint16_t *) sprite->data;
+	uint16_t deb = 56;
+	uint16_t *oldData = (uint16_t *) source->data;
 	
-	sprite_t* newSprite = malloc(sizeof(sprite_t) + sizeof(uint16_t) 
-							* (int) (sprite->width)
-							* (int) (sprite->height));
-	int width = sprite->width;
-	int height = sprite->height;
-	newSprite->bitdepth = sprite->bitdepth;
-	newSprite->width = sprite->width;
-	newSprite->height = sprite->height;
-	newSprite->hslices = sprite->hslices;
-	newSprite->vslices = sprite->vslices;
-	uint16_t *newData = (uint16_t *)newSprite->data;
-	memset(newData, 0, sizeof(newData));
+	int width = source->width;
+	int height = source->height;
+	uint16_t *newData = (uint16_t *) dest->data;
+	int l = width * height - 1;
+	for(int i = 0; i < l; i++) newData[i] = GFX_COLOR_TRANS;
 	for(int x = 0; x < width; x++)
 	{
 		float x_share = (float) x / width;
@@ -120,8 +113,9 @@ sprite_t* fx_sprite_4_point_transform(sprite_t* sprite,
 
 			if(x_new >= 0 && x_new < width && y_new >= 0 && y_new < height)
 				newData[y_new * width + x_new] = oldData[y * width + x];
+			if(x_new == 50 && y_new == 50)
+				deb = oldData[y * width + x];
 		}
 	}
-	if(freeOriginal) free(sprite);
-	return newSprite;
+	return deb;
 }

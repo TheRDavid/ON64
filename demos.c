@@ -20,7 +20,7 @@ int main(void)
 	static display_context_t disp = 0; 
 	//char *soundFiles[5] =  {"rom://music.mod", "rom://pacman_intro.wav", "rom://pacman_x.wav", "rom://pacman_x_s.wav"};
 	//int SOUND_MUSIC = 0;//, SOUND_EFFECT = 1; //, SOUND_EDD_DOING = 2;
-	tools_init("2.4", disp);
+	tools_init("2.4.3", disp);
 	//sound_init(soundFiles, 4, 4);
 	int numItems = 11;
 	
@@ -36,8 +36,8 @@ int main(void)
 	sprite_t* sprite4 = gfx_load_sprite("4.sprite");
 	sprite_t* sprite4_O = gfx_load_sprite("4.sprite");
 
-	sprite_t* numberSprite_O = gfx_sprite_scale(gfx_load_sprite("tracer.sprite"), BILINEAR, 0.5f, TRUE);
-	sprite_t* numberSprite = gfx_sprite_scale(gfx_load_sprite("tracer.sprite"), BILINEAR, 0.5f, TRUE);
+	sprite_t* tracer_sprite_O = gfx_sprite_scale(gfx_load_sprite("tracer.sprite"), BILINEAR, 0.5f, TRUE);
+	sprite_t* tracer_sprite = gfx_sprite_scale(gfx_load_sprite("tracer.sprite"), BILINEAR, 0.5f, TRUE);
 	
 	sprite_t* aniSprite = gfx_load_sprite("1.sprite");
 	aniSprite->hslices = 12;
@@ -98,9 +98,9 @@ int main(void)
 							};
 
 	int distortCorners[8] = {0, 0,
-							numberSprite->width, 0, 
-							numberSprite->width, numberSprite->height, 
-							0, numberSprite->height};
+							tracer_sprite->width, 0, 
+							tracer_sprite->width, tracer_sprite->height, 
+							0, tracer_sprite->height};
 	int selectedCorner = 0;
 	
 	gfx_shape_rectangle rect1, rect2;
@@ -457,40 +457,45 @@ int main(void)
 			{
 				distortCorners[0] = 0;
 				distortCorners[1] = 0;
-				distortCorners[2] = numberSprite_O->width;
+				distortCorners[2] = tracer_sprite_O->width;
 				distortCorners[3] = 0;
-				distortCorners[4] = numberSprite_O->width;
-				distortCorners[5] = numberSprite_O->height;
+				distortCorners[4] = tracer_sprite_O->width;
+				distortCorners[5] = tracer_sprite_O->height;
 				distortCorners[6] = 0;
-				distortCorners[7] = numberSprite_O->height;
-				free(numberSprite);
-				numberSprite = malloc(sizeof(numberSprite_O));
-				memcpy(numberSprite, numberSprite_O, sizeof(numberSprite_O));
+				distortCorners[7] = tracer_sprite_O->height;
+				memcpy(tracer_sprite->data, tracer_sprite_O->data, sizeof(tracer_sprite_O->data));
 			} 
-
-			if(x_change != 0 || y_change != 0)
-			{
-				free(numberSprite);
-				numberSprite = fx_sprite_4_point_transform(numberSprite_O,
-															distortCorners[0], distortCorners[1],
-															distortCorners[2], distortCorners[3],
-															distortCorners[4], distortCorners[5],
-															distortCorners[6], distortCorners[7],
-															FALSE);
-			} 
-
+			char msg1[30];
+			sprintf(msg1, "Before@50x50: %lu", tracer_sprite->data[50 + 50 * tracer_sprite->width]);
+			
+			uint32_t deb = fx_sprite_4_point_transform(tracer_sprite_O, tracer_sprite,
+										distortCorners[0], distortCorners[1],
+										distortCorners[2], distortCorners[3],
+										distortCorners[4], distortCorners[5],
+										distortCorners[6], distortCorners[7]);
+			char msg2[30];
+			sprintf(msg2, "deb@50x50: %lu", deb);
+			
+			// only change corners if within acceptable bounds
+			if(	distortCorners[selectedCorner] + x_change >= 0 
+				&& distortCorners[selectedCorner] + x_change < tracer_sprite->width)
 			distortCorners[selectedCorner] += x_change;
+
+			if(	distortCorners[selectedCorner + 1] + y_change >= 0 
+				&& distortCorners[selectedCorner + 1] + y_change < tracer_sprite->height)
 			distortCorners[selectedCorner + 1] += y_change;
-			char msg[30];
-			sprintf(msg, "@0x0: %lu", numberSprite->data[0]);
-			tools_print(msg);
-			graphics_draw_sprite_trans( disp, imgX + ZERO_X, imgY + ZERO_Y, numberSprite);
-			graphics_draw_text(disp, 10 +ZERO_X, 140 +ZERO_Y, "A: Switch Corner");
-			graphics_draw_text(disp, 10 +ZERO_X, 160 +ZERO_Y, "B: Reset");
+
+			char msg3[30];
+			// bullshit !!
+			sprintf(msg3, "After@50x50: %lu", tracer_sprite->data[50 + 50 * tracer_sprite->width]);
+			graphics_draw_sprite(disp, imgX + ZERO_X, imgY + ZERO_Y, tracer_sprite);
+			graphics_draw_text(disp, 10 + ZERO_X, 110 + ZERO_Y, msg1);
+			graphics_draw_text(disp, 10 + ZERO_X, 135 + ZERO_Y, msg2);
+			graphics_draw_text(disp, 10 + ZERO_X, 160 + ZERO_Y, msg3);
 
 			graphics_draw_box_trans(disp, 
-					ZERO_X + distortCorners[selectedCorner] - 2, 
-					ZERO_Y + distortCorners[selectedCorner + 1] - 2,
+					imgX + ZERO_X + distortCorners[selectedCorner] - 2, 
+					imgY + ZERO_Y + distortCorners[selectedCorner + 1] - 2,
 					4, 4, 
 					GFX_COLOR_RED);
 
@@ -508,7 +513,7 @@ int main(void)
 					fg = GFX_COLOR_BLACK;
 					graphics_draw_box(disp, x - 10 + ZERO_X, y - 2 + ZERO_Y, 105, 10, bg);
 				}
-				graphics_set_color(fg,bg);
+				graphics_set_color(fg, bg);
 				graphics_draw_text(disp, x + ZERO_X , y + ZERO_Y, menuItems[i]);
 			}
 			
