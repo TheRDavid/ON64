@@ -80,28 +80,18 @@ Kniffliger Pointer-bug:		gfx_sprite_Rotate() nimmt das zu rotierende Bild, speic
 				Wird nun das Original zurückgeliefert, verweisen sowohl der alte, als auch der neue Pointer auf dieselbe Adresse. Löscht man einen, dann auch den anderen.
 				Um dies zu verhindern liefere ich nicht mehr bei einer nicht-Rotation das Originalbild, sondern eine Kopie des Originalbildes zurück.	
 
+---------------Konventionen--------------------
+Graphiken:
+	{name}_{width}x{height} // normal Image
+	{name}_{name}_merged_{width}x{height} // merged image width and height of each
+	{name}_anim_{width}x{height}_{x_slices}x{y_slices} // animated sprite, width and height per slice
+	{name}_anim_merged_{width}x{height}_{x_slices}x{y_slices} // animated, merged sprite
 
 --------------------todo---------------------------
 demos fertigstellen
 text skalieren
 SoundInterface
 fps lock (25)
-
------------------funktioniert---------------------
-sprites rotieren um n deg (!=0)
-alpha-werte
-unfreiwilliger Graphikeffekt: Whirl (fehlgeschlagene Rotation)
-sprites rotieren um int n*90deg
-sprites skalieren (nearest neighbour, billinear)
-Sprites
-Text
-2 Controller Input
-Sound
-Performance anzeige				tools_show(display, 1) // 1 steht für debug-modus on
-Horizontal und Vertikal flippen
-debug-console
-unfuck input mess (immer mal wieder neu einstellen)
-spritemaps
 
 --------------bugs----------------------------
 
@@ -116,7 +106,7 @@ nur neu zeichnen, was aktualisiert werden muss
 90deg rotation - keine neue Instanz erzeugen
 triangles immer in richtiger Reihenfolge definieren, nicht erst beim Zeichnen sortieren!
 Animationsframes überblenden (rgb fade, cinematischer, weniger frames noetig?)
-scaling backward-mapping (also rotating, maybe 4-point-transformation also?)
+scaling backward-mapping 
 
 --------------------nice to have--------------------
 debugMessages ringBuffer

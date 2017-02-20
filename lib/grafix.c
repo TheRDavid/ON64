@@ -548,7 +548,7 @@ void gfx_draw_merged_sprite_stride(display_context_t display, sprite_t* sprite, 
 				graphics_draw_pixel_trans(display, x + xp - tx, y + yp - ty, uncompressedPixel);
 			}
 		}
-		tools_print("UP");
+	//	tools_print("UP");
 	} else
 	{
 		offset -= numTiles;
@@ -577,16 +577,16 @@ void gfx_draw_merged_sprite_stride(display_context_t display, sprite_t* sprite, 
 				graphics_draw_pixel_trans(display, x + xp - tx, y + yp - ty, uncompressedPixel);
 			}
 		}
-		tools_print("LOW");
+	//	tools_print("LOW");
 	}
 }
 
 void gfx_draw_merged_sprite(display_context_t display, sprite_t* sprite, uint8_t x, uint8_t y, uint8_t layer)
 {
-	uint16_t *data = (uint16_t *)sprite->data;
+	uint16_t *data = (uint16_t *) sprite->data;
 	if(layer == UPPER_LAYER)
 	{
-		tools_print("UPPER LAYER");
+		//tools_print("UPPER LAYER");
 		for(int y0 = 0; y0 < sprite->height; y0++)
 		{
 			const register int idxByRow = y0 * sprite->width, yCoord = y0 + y;
@@ -605,7 +605,7 @@ void gfx_draw_merged_sprite(display_context_t display, sprite_t* sprite, uint8_t
 		}
 	} else
 	{
-		tools_print("LOWER LAYER");
+		//tools_print("LOWER LAYER");
 		for(int y0 = 0; y0 < sprite->height; y0++)
 		{
 			const register int idxByRow = y0 * sprite->width, yCoord = y0 + y;

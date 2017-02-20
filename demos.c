@@ -23,25 +23,39 @@ int main(void)
 	tools_init("2.4.3", disp);
 	//sound_init(soundFiles, 4, 4);
 	int numItems = 11;
-	
-	sprite_t* sprite1 = gfx_load_sprite("1.sprite");
-	sprite_t* sprite1_O = gfx_load_sprite("1.sprite");
-	
-	sprite_t* sprite2 = gfx_load_sprite("2.sprite");
-	sprite_t* sprite2_O = gfx_load_sprite("2.sprite");
-	
-	sprite_t* sprite3 = gfx_load_sprite("3.sprite");
-	sprite_t* sprite3_O = gfx_load_sprite("3.sprite");
-	
-	sprite_t* sprite4 = gfx_load_sprite("4.sprite");
-	sprite_t* sprite4_O = gfx_load_sprite("4.sprite");
-
-	sprite_t* tracer_sprite_O = gfx_sprite_scale(gfx_load_sprite("tracer.sprite"), BILINEAR, 0.5f, TRUE);
 	sprite_t* tracer_sprite = gfx_sprite_scale(gfx_load_sprite("tracer.sprite"), BILINEAR, 0.5f, TRUE);
+	sprite_t* tracer_sprite_O = gfx_sprite_scale(gfx_load_sprite("tracer.sprite"), BILINEAR, 0.5f, TRUE);
 	
-	sprite_t* aniSprite = gfx_load_sprite("1.sprite");
-	aniSprite->hslices = 12;
-	aniSprite->vslices = 5;
+	/*
+	sprite_t* sprite1 = gfx_load_sprite("tracer.sprite");
+	sprite_t* sprite1_O = gfx_load_sprite("tracer.sprite");
+	sprite_t* sprite2 = gfx_load_sprite("tracer.sprite");
+	sprite_t* sprite2_O = gfx_load_sprite("tracer.sprite");
+	sprite_t* sprite3 = gfx_load_sprite("tracer.sprite");
+	sprite_t* sprite3_O = gfx_load_sprite("tracer.sprite");
+	sprite_t* sprite4 = gfx_load_sprite("tracer.sprite");
+	sprite_t* sprite4_O = gfx_load_sprite("tracer.sprite");
+	sprite_t* aniSprite = gfx_load_sprite("tracer.sprite");*/
+
+	sprite_t* sprite1 = gfx_load_sprite("trainer_biker_merged_64x64.sprite");
+	sprite_t* sprite1_O = gfx_load_sprite("trainer_biker_merged_64x64.sprite");
+	
+	sprite_t* sprite2 = gfx_load_sprite("pokemonTitle_pokeball_merged_100x100.sprite");
+	sprite_t* sprite2_O = gfx_load_sprite("pokemonTitle_pokeball_merged_100x100.sprite");
+	
+	sprite_t* sprite3 = gfx_load_sprite("pikachu_abra_merged_160x120.sprite");
+	sprite_t* sprite3_O = gfx_load_sprite("pikachu_abra_merged_160x120.sprite");
+	
+	sprite_t* sprite4 = gfx_load_sprite("marrill_glurak_merged_320x240.sprite");
+	sprite_t* sprite4_O = gfx_load_sprite("marrill_glurak_merged_320x240.sprite");
+	
+	sprite_t* aniSprite = gfx_load_sprite("hoppel_anim_merged_156x113_6x2.sprite");
+
+	sprite_t* sweatSmileSprite = gfx_load_sprite("sweatSmile_72x72.sprite");
+	sprite_t* sweatSmileSprite_O = gfx_load_sprite("sweatSmile_72x72.sprite");
+
+	aniSprite->hslices = 6;
+	aniSprite->vslices = 2;
 	int aniStep = 0;
 	int imgX = 0, imgY = 0, degree = 0;
 	
@@ -164,18 +178,31 @@ int main(void)
 		struct controller_data keys = get_keys_down();
 		if(keys.c[0].start)
 		{
-			free(sprite1);
-			free(sprite2);
-			free(sprite3);
-			free(sprite4);
-			sprite1 = malloc(sizeof(sprite1_O));
-			sprite2 = malloc(sizeof(sprite2_O));
-			sprite3 = malloc(sizeof(sprite3_O));
-			sprite4 = malloc(sizeof(sprite4_O));
+			tools_print("resetting!");
+
+			realloc(sprite1, sizeof(sprite1_O));
+			realloc(sprite2, sizeof(sprite2_O));
+			realloc(sprite3, sizeof(sprite3_O));
+			realloc(sprite4, sizeof(sprite4_O));
+			realloc(sweatSmileSprite, sizeof(sweatSmileSprite_O));
+
 			memcpy(sprite1, sprite1_O, sizeof(sprite1_O));
 			memcpy(sprite2, sprite2_O, sizeof(sprite2_O));
 			memcpy(sprite3, sprite3_O, sizeof(sprite3_O));
 			memcpy(sprite4, sprite4_O, sizeof(sprite4_O));
+			memcpy(sweatSmileSprite, sweatSmileSprite_O, sizeof(sweatSmileSprite_O));
+
+			sprite1->width = sprite1_O->width;
+			sprite2->width = sprite2_O->width;
+			sprite3->width = sprite3_O->width;
+			sprite4->width = sprite4_O->width;
+			sweatSmileSprite->width = sweatSmileSprite_O->width;
+
+			sprite1->height = sprite1_O->height;
+			sprite2->height = sprite2_O->height;
+			sprite3->height = sprite3_O->height;
+			sprite4->height = sprite4_O->height;
+			sweatSmileSprite->height = sweatSmileSprite_O->height;
 		}
 		if(scenario == 0)
 		{
@@ -186,10 +213,13 @@ int main(void)
 			if(keys.c[0].left) imgX = imgX > 0 + ZERO_Y ? imgX-1 : imgX;
 			if(keys.c[0].right) imgX = imgX < 320 ? imgX+1 : imgX;
 			if(keys.c[0].Z) scenario = -1;
-			graphics_draw_sprite_trans( disp, imgX + ZERO_X, imgY + ZERO_Y, sprite1);
-			graphics_draw_sprite_trans( disp, imgX + ZERO_X + 74, imgY + ZERO_Y, sprite2);
-			graphics_draw_sprite_trans( disp, imgX + ZERO_X, imgY + ZERO_Y + 74, sprite3);
-			graphics_draw_sprite_trans( disp, imgX + ZERO_X + 30, imgY + ZERO_Y + 30, sprite4);
+			gfx_draw_merged_sprite(disp, sprite1, imgX + ZERO_X, imgY + ZERO_Y, UPPER_LAYER);
+			gfx_draw_merged_sprite(disp, sprite1, imgX + ZERO_X + 64, imgY + ZERO_Y, LOWER_LAYER);
+
+			gfx_draw_merged_sprite(disp, sprite2, imgX + ZERO_X, imgY + ZERO_Y + 64, UPPER_LAYER);
+			gfx_draw_merged_sprite(disp, sprite2, imgX + ZERO_X + 100, imgY + ZERO_Y + 64, LOWER_LAYER);
+
+			graphics_draw_sprite_trans(disp, imgX + ZERO_X + 128, imgY + ZERO_Y, sweatSmileSprite);
 		} else if(scenario == 1)
 		{
 			graphics_draw_text(disp, 10+ZERO_X , 170 +ZERO_Y, "Use DPad for BILINEAR\nscaling (up and down)");
@@ -199,35 +229,34 @@ int main(void)
 			{
 				sprite1 = gfx_sprite_scale(sprite1, BILINEAR, 1.2f, 1);
 				sprite2 = gfx_sprite_scale(sprite2, BILINEAR, 1.2f, 1);
-				sprite3 = gfx_sprite_scale(sprite3, BILINEAR, 1.2f, 1);
-				sprite4 = gfx_sprite_scale(sprite4, BILINEAR, 1.2f, 1);
+				sweatSmileSprite = gfx_sprite_scale(sweatSmileSprite, BILINEAR, 1.2f, 1);
 			}
 			if(keys.c[0].down)
 			{ 
 				sprite1 = gfx_sprite_scale(sprite1, BILINEAR, 0.8f, 1);
 				sprite2 = gfx_sprite_scale(sprite2, BILINEAR, 0.8f, 1);
-				sprite3 = gfx_sprite_scale(sprite3, BILINEAR, 0.8f, 1);
-				sprite4 = gfx_sprite_scale(sprite4, BILINEAR, 0.8f, 1);
+				sweatSmileSprite = gfx_sprite_scale(sweatSmileSprite, BILINEAR, 0.8f, 1);
 			}
 			if(keys.c[0].C_up)
 			{ 
 				sprite1 = gfx_sprite_scale(sprite1, NEAREST_NEIGHBOUR, 1.2f, 1);
 				sprite2 = gfx_sprite_scale(sprite2, NEAREST_NEIGHBOUR, 1.2f, 1);
-				sprite3 = gfx_sprite_scale(sprite3, NEAREST_NEIGHBOUR, 1.2f, 1);
-				sprite4 = gfx_sprite_scale(sprite4, NEAREST_NEIGHBOUR, 1.2f, 1);
+				sweatSmileSprite = gfx_sprite_scale(sweatSmileSprite, NEAREST_NEIGHBOUR, 1.2f, 1);
 			}
 			if(keys.c[0].C_down)
 			{ 
 				sprite1 = gfx_sprite_scale(sprite1, NEAREST_NEIGHBOUR, 0.8f, 1);
 				sprite2 = gfx_sprite_scale(sprite2, NEAREST_NEIGHBOUR, 0.8f, 1);
-				sprite3 = gfx_sprite_scale(sprite3, NEAREST_NEIGHBOUR, 0.8f, 1);
-				sprite4 = gfx_sprite_scale(sprite4, NEAREST_NEIGHBOUR, 0.8f, 1);
+				sweatSmileSprite = gfx_sprite_scale(sweatSmileSprite, NEAREST_NEIGHBOUR, 0.8f, 1);
 			}
 			if(keys.c[0].Z) scenario = -1;
-			graphics_draw_sprite_trans( disp, imgX + ZERO_X, imgY + ZERO_Y, sprite1);
-			graphics_draw_sprite_trans( disp, imgX + ZERO_X + 74, imgY + ZERO_Y, sprite2);
-			graphics_draw_sprite_trans( disp, imgX + ZERO_X, imgY + ZERO_Y + 74, sprite3);
-			graphics_draw_sprite_trans( disp, imgX + ZERO_X + 74, imgY + ZERO_Y + 74, sprite4);
+			gfx_draw_merged_sprite(disp, sprite1, imgX + ZERO_X, imgY + ZERO_Y, UPPER_LAYER);
+			gfx_draw_merged_sprite(disp, sprite1, imgX + ZERO_X + 64, imgY + ZERO_Y, LOWER_LAYER);
+
+			gfx_draw_merged_sprite(disp, sprite2, imgX + ZERO_X, imgY + ZERO_Y + 64, UPPER_LAYER);
+			gfx_draw_merged_sprite(disp, sprite2, imgX + ZERO_X + 100, imgY + ZERO_Y + 64, LOWER_LAYER);
+
+			graphics_draw_sprite_trans(disp, imgX + ZERO_X + 128, imgY + ZERO_Y, sweatSmileSprite);
 		} else if(scenario == 2)
 		{
 			keys = get_keys_pressed();
@@ -271,12 +300,12 @@ int main(void)
 			
 			if(rot)
 			{
+				free(sprite1);
 				free(sprite2);
-				free(sprite3);
-				free(sprite4);
+				free(sweatSmileSprite);
 				sprite2 = gfx_sprite_rotate(sprite2_O, degree, FALSE);
 				sprite3 = gfx_sprite_rotate(sprite3_O, degree, FALSE);
-				sprite4 = gfx_sprite_rotate(sprite4_O, degree, FALSE);
+				sweatSmileSprite = gfx_sprite_rotate(sweatSmileSprite_O, degree, FALSE);
 			}
 			
 			graphics_draw_text(disp, 10+ZERO_X , 190+ZERO_Y , "Use DPad (left / right) to rotate");
@@ -284,9 +313,14 @@ int main(void)
 			sprintf(degMessage, "%d", degree);
 			graphics_draw_text( disp, 10+ZERO_X, 160+ZERO_Y, degMessage);
 			if(keys.c[0].Z) scenario = -1;
-			graphics_draw_sprite_trans( disp, imgX + ZERO_X + 140, imgY + ZERO_Y, sprite2);
-			graphics_draw_sprite_trans( disp, imgX + ZERO_X, imgY + ZERO_Y, sprite3);
-			graphics_draw_sprite_trans( disp, imgX + ZERO_X + 140, imgY + ZERO_Y + 100, sprite4);
+
+			gfx_draw_merged_sprite(disp, sprite1, imgX + ZERO_X, imgY + ZERO_Y, UPPER_LAYER);
+			gfx_draw_merged_sprite(disp, sprite1, imgX + ZERO_X + 64, imgY + ZERO_Y, LOWER_LAYER);
+
+			gfx_draw_merged_sprite(disp, sprite2, imgX + ZERO_X, imgY + ZERO_Y + 64, UPPER_LAYER);
+			gfx_draw_merged_sprite(disp, sprite2, imgX + ZERO_X + 100, imgY + ZERO_Y + 64, LOWER_LAYER);
+
+			graphics_draw_sprite_trans(disp, imgX + ZERO_X + 128, imgY + ZERO_Y, sweatSmileSprite);
 			
 			gfx_draw_rectangle(disp, imgX + ZERO_X + 140, imgY + ZERO_Y, sprite2->width, sprite2->height, GFX_COLOR_RED, FALSE);
 			gfx_draw_rectangle(disp, imgX + ZERO_X, imgY + ZERO_Y, sprite3->width, sprite3->height, GFX_COLOR_GREEN, FALSE);
@@ -304,22 +338,23 @@ int main(void)
 			{
 				gfx_sprite_hflip(sprite1);
 				gfx_sprite_hflip(sprite2);
-				gfx_sprite_hflip(sprite3);
-				gfx_sprite_hflip(sprite4);
+				gfx_sprite_hflip(sweatSmileSprite);
 			}
 			if(keys.c[0].B)
 			{
 				gfx_sprite_vflip(sprite1);
 				gfx_sprite_vflip(sprite2);
-				gfx_sprite_vflip(sprite3);
-				gfx_sprite_vflip(sprite4);
+				gfx_sprite_vflip(sweatSmileSprite);
 			}
 			graphics_draw_text(disp, 10 +ZERO_X, 190+ZERO_Y , "Use A to HFlip, B to VFlip");
 			if(keys.c[0].Z) scenario = -1;
-			graphics_draw_sprite_trans( disp, imgX + ZERO_X, imgY + ZERO_Y, sprite1);
-			graphics_draw_sprite_trans( disp, imgX + ZERO_X + 74, imgY + ZERO_Y, sprite2);
-			graphics_draw_sprite_trans( disp, imgX + ZERO_X, imgY + ZERO_Y + 74, sprite3);
-			graphics_draw_sprite_trans( disp, imgX + ZERO_X + 74, imgY + ZERO_Y + 74, sprite4);
+			gfx_draw_merged_sprite(disp, sprite1, imgX + ZERO_X, imgY + ZERO_Y, UPPER_LAYER);
+			gfx_draw_merged_sprite(disp, sprite1, imgX + ZERO_X + 64, imgY + ZERO_Y, LOWER_LAYER);
+
+			gfx_draw_merged_sprite(disp, sprite2, imgX + ZERO_X, imgY + ZERO_Y + 64, UPPER_LAYER);
+			gfx_draw_merged_sprite(disp, sprite2, imgX + ZERO_X + 100, imgY + ZERO_Y + 64, LOWER_LAYER);
+
+			graphics_draw_sprite_trans(disp, imgX + ZERO_X + 128, imgY + ZERO_Y, sweatSmileSprite);
 		} else if(scenario == 4)
 		{
 			keys = get_keys_pressed();
@@ -328,28 +363,29 @@ int main(void)
 			{
 				fx_sprite_fade(sprite1, 1);
 				fx_sprite_fade(sprite2, 1);
-				fx_sprite_fade(sprite3, 1);
-				fx_sprite_fade(sprite4, 1);
+				fx_sprite_fade(sweatSmileSprite, 1);
 			}
 			if(keys.c[0].down)
 			{
 				fx_sprite_fade(sprite1, -1);
 				fx_sprite_fade(sprite2, -1);
-				fx_sprite_fade(sprite3, -1);
-				fx_sprite_fade(sprite4, -1);
+				fx_sprite_fade(sweatSmileSprite, -1);
 			}
 			if(keys.c[0].Z) scenario = -1;
-			graphics_draw_sprite_trans( disp, imgX + ZERO_X, imgY + ZERO_Y, sprite1);
-			graphics_draw_sprite_trans( disp, imgX + ZERO_X + 74, imgY + ZERO_Y, sprite2);
-			graphics_draw_sprite_trans( disp, imgX + ZERO_X, imgY + ZERO_Y + 74, sprite3);
-			graphics_draw_sprite_trans( disp, imgX + ZERO_X + 74, imgY + ZERO_Y + 74, sprite4);
+			gfx_draw_merged_sprite(disp, sprite1, imgX + ZERO_X, imgY + ZERO_Y, UPPER_LAYER);
+			gfx_draw_merged_sprite(disp, sprite1, imgX + ZERO_X + 64, imgY + ZERO_Y, LOWER_LAYER);
+
+			gfx_draw_merged_sprite(disp, sprite2, imgX + ZERO_X, imgY + ZERO_Y + 64, UPPER_LAYER);
+			gfx_draw_merged_sprite(disp, sprite2, imgX + ZERO_X + 100, imgY + ZERO_Y + 64, LOWER_LAYER);
+
+			graphics_draw_sprite_trans(disp, imgX + ZERO_X + 128, imgY + ZERO_Y, sweatSmileSprite);
 		} else if(scenario == 5)
 		{
 			
 			keys = get_keys_down();
 			if(keys.c[0].B) sound_playSample(2);
 			if(keys.c[0].A) sound_playSample(1);
-			if(keys.c[0].start)sound_playSample(3);
+			if(keys.c[0].start) sound_playSample(3);
 			
 			if(keys.c[0].Z) scenario = -1;
 		}  else if(scenario == 6)
@@ -358,8 +394,8 @@ int main(void)
 			if(keys.c[0].A) aniStep++;
 			if(keys.c[0].C_down) aniSprite = gfx_sprite_scale(aniSprite, BILINEAR, 0.8f, 1);
 			if(keys.c[0].C_up) aniSprite = gfx_sprite_scale(aniSprite, BILINEAR, 1.2f, 1);
-			aniStep = aniStep > 59 ? 0 : aniStep;
-			graphics_draw_sprite_trans_stride( disp, ZERO_X, ZERO_Y, aniSprite, aniStep);
+			aniStep = aniStep > 11 ? 0 : aniStep;
+			gfx_draw_merged_sprite_stride( disp, aniSprite, ZERO_X + 10, ZERO_Y + 10, aniStep);
 			aniStep++;
 			if(keys.c[0].Z) scenario = -1;
 		} else if(scenario == 7)
