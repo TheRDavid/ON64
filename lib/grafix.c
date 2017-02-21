@@ -67,6 +67,25 @@ sprite_t* gfx_load_sprite(const char *const name)
 	return newSprite;
 }
 
+sprite_t* gfx_copy_sprite(sprite_t* original)
+{
+	sprite_t* newSprite = malloc (sizeof(uint16_t) 
+								* (int) (original->width)
+								* (int) (original->height)
+								+ sizeof(sprite_t));
+	newSprite->width = original->width;
+	newSprite->height = original->height;
+	newSprite->hslices = original->hslices;
+	newSprite->vslices = original->vslices;
+	newSprite->bitdepth = original->bitdepth;
+	uint16_t* originalData = (uint16_t *) original->data;
+	uint16_t* newData = (uint16_t *) newSprite->data;
+	int l = original->width * original->height;
+	for(int i = 0; i < l; i++)
+		newData[i] = originalData[i];
+	return newSprite;
+}
+
 sprite_t* gfx_sprite_scale(sprite_t* sprite, gfx_scaleMode mode, float factor, int freeOriginal)
 {	
 	uint16_t newWidth = (uint16_t) round(sprite->width * factor);

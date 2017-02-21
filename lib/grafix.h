@@ -77,6 +77,11 @@ void gfx_finish();
 sprite_t* gfx_load_sprite(const char *const name);
 
 /**
+  * Returns a deep copy of the original  sprite
+  */
+sprite_t* gfx_copy_sprite(sprite_t* original);
+
+/**
  * Scales by the given factor according to the given mode
  * TODO: Scaling the slices as well (for animated sprites)
  * 

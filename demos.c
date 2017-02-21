@@ -176,21 +176,55 @@ int main(void)
 		
 		tools_update();
 		struct controller_data keys = get_keys_down();
+		
 		if(keys.c[0].start)
 		{
 			tools_print("resetting!");
 
-			realloc(sprite1, sizeof(sprite1_O));
-			realloc(sprite2, sizeof(sprite2_O));
-			realloc(sprite3, sizeof(sprite3_O));
-			realloc(sprite4, sizeof(sprite4_O));
-			realloc(sweatSmileSprite, sizeof(sweatSmileSprite_O));
+			free(sprite1);
+			free(sprite2);
+			free(sprite3);
+			free(sprite4);
+			free(sweatSmileSprite);
 
-			memcpy(sprite1, sprite1_O, sizeof(sprite1_O));
-			memcpy(sprite2, sprite2_O, sizeof(sprite2_O));
-			memcpy(sprite3, sprite3_O, sizeof(sprite3_O));
-			memcpy(sprite4, sprite4_O, sizeof(sprite4_O));
-			memcpy(sweatSmileSprite, sweatSmileSprite_O, sizeof(sweatSmileSprite_O));
+			sprite1 = gfx_copy_sprite(sprite1_O);
+			sprite2 = gfx_copy_sprite(sprite2_O);
+			sprite3 = gfx_copy_sprite(sprite3_O);
+			sprite4 = gfx_copy_sprite(sprite4_O);
+			sweatSmileSprite = gfx_copy_sprite(sweatSmileSprite_O);
+
+			/*sprite1 = malloc (sizeof(uint16_t) 
+								* (int) (sprite1_O->width)
+								* (int) (sprite1_O->height)
+								+ sizeof(sprite_t));
+			sprite2 = malloc (sizeof(uint16_t) 
+								* (int) (sprite2_O->width)
+								* (int) (sprite2_O->height)
+								+ sizeof(sprite_t));
+			sprite3 = malloc (sizeof(uint16_t) 
+								* (int) (sprite3_O->width)
+								* (int) (sprite3_O->height)
+								+ sizeof(sprite_t));
+			sprite4 = malloc (sizeof(uint16_t) 
+								* (int) (sprite4_O->width)
+								* (int) (sprite4_O->height)
+								+ sizeof(sprite_t));
+			sweatSmileSprite = malloc (sizeof(uint16_t) 
+								* (int) (sweatSmileSprite_O->width)
+								* (int) (sweatSmileSprite_O->height)
+								+ sizeof(sprite_t));
+
+			uint16_t* data1 = (uint16_t *) sprite1->data;
+			uint16_t* data2 = (uint16_t *) sprite2->data;
+			uint16_t* data3 = (uint16_t *) sprite3->data;
+			uint16_t* data4 = (uint16_t *) sprite4->data;
+			uint16_t* data5 = (uint16_t *) sweatSmileSprite->data;
+
+			uint16_t* O_data1 = (uint16_t *) sprite1_O->data;
+			uint16_t* O_data2 = (uint16_t *) sprite2_O->data;
+			uint16_t* O_data3 = (uint16_t *) sprite3_O->data;
+			uint16_t* O_data4 = (uint16_t *) sprite4_O->data;
+			uint16_t* O_data5 = (uint16_t *) sweatSmileSprite_O->data;
 
 			sprite1->width = sprite1_O->width;
 			sprite2->width = sprite2_O->width;
@@ -203,7 +237,19 @@ int main(void)
 			sprite3->height = sprite3_O->height;
 			sprite4->height = sprite4_O->height;
 			sweatSmileSprite->height = sweatSmileSprite_O->height;
+
+			int l = sprite1->width * sprite1->height;
+			for(int i = 0; i < l; i++) data1[i] = O_data1[i];
+			l = sprite2->width * sprite2->height;
+			for(int i = 0; i < l; i++) data2[i] = O_data2[i];
+			l = sprite3->width * sprite3->height;
+			for(int i = 0; i < l; i++) data3[i] = O_data3[i];
+			l = sprite4->width * sprite4->height;
+			for(int i = 0; i < l; i++) data4[i] = O_data4[i];
+			l = sweatSmileSprite->width * sweatSmileSprite->height;
+			for(int i = 0; i < l; i++) data5[i] = O_data5[i];*/
 		}
+
 		if(scenario == 0)
 		{
 			keys = get_keys_pressed();
