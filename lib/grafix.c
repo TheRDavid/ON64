@@ -86,7 +86,7 @@ sprite_t* gfx_copy_sprite(sprite_t* original)
 	return newSprite;
 }
 
-sprite_t* gfx_sprite_scale(sprite_t* sprite, gfx_scaleMode mode, float factor, int freeOriginal)
+sprite_t* gfx_sprite_scale(sprite_t* sprite, gfx_scaleMode mode, float factor, int freeOriginal, int merged)
 {	
 	uint16_t newWidth = (uint16_t) round(sprite->width * factor);
 	uint16_t newHeight = (uint16_t) round(sprite->height * factor);
@@ -172,68 +172,146 @@ sprite_t* gfx_sprite_scale(sprite_t* sprite, gfx_scaleMode mode, float factor, i
 
 
 					// MIXDEMCOLORS
-					color_t color0;
-					color0.a = (oldData[ulIndex]) << 7;
-					color0.b = (oldData[ulIndex]) << 2;
-					color0.g = (oldData[ulIndex]) >> 3;
-					color0.r = (oldData[ulIndex]) >> 8;
-					
-					color_t color1;
-					color1.a = (oldData[urIndex]) << 7;
-					color1.b = (oldData[urIndex]) << 2;
-					color1.g = (oldData[urIndex]) >> 3;
-					color1.r = (oldData[urIndex]) >> 8;
-					
-					color_t color2;
-					color2.a = (oldData[llIndex]) << 7;
-					color2.b = (oldData[llIndex]) << 2;
-					color2.g = (oldData[llIndex]) >> 3;
-					color2.r = (oldData[llIndex]) >> 8;
-					
-					color_t color3;
-					color3.a = (oldData[lrIndex]) << 7;
-					color3.b = (oldData[lrIndex]) << 2;
-					color3.g = (oldData[lrIndex]) >> 3;
-					color3.r = (oldData[lrIndex]) >> 8;
-					
-					uint8_t a4 = (oldData[ulIndex + 1]) << 7;
-					uint8_t a5 = (oldData[llIndex + 1]) << 7;
-					uint8_t a6 = (oldData[ulIndex + sprite->width]) << 7;
-					uint8_t a7 = (oldData[urIndex + sprite->width]) << 7;
-					
-					color_t colorUp;
-					colorUp.r = (double) color0.r * leftShare + (double) color1.r * rightShare;
-					colorUp.g = (double) color0.g * leftShare + (double) color1.g * rightShare;
-					colorUp.b = (double) color0.b * leftShare + (double) color1.b * rightShare;
-					
-					color_t colorLow;
-					colorLow.r = (double) color2.r * leftShare + (double) color3.r * rightShare;
-					colorLow.g = (double) color2.g * leftShare + (double) color3.g * rightShare;
-					colorLow.b = (double) color2.b * leftShare + (double) color3.b * rightShare;
-					
-					color_t colorNew;
-					colorNew.r = (double) colorLow.r * lowerShare + (double) colorUp.r * upperShare;
-					colorNew.g = (double) colorLow.g * lowerShare + (double) colorUp.g * upperShare;
-					colorNew.b = (double) colorLow.b * lowerShare + (double) colorUp.b * upperShare;
-					
-					int numTrans = 0;
-					if(color0.a == 0) numTrans++;
-					if(color1.a == 0) numTrans++;
-					if(color2.a == 0) numTrans++;
-					if(color3.a == 0) numTrans++;
-					if(a4 == 0) numTrans += 2;
-					if(a5 == 0) numTrans += 2;
-					if(a6 == 0) numTrans += 2;
-					if(a7 == 0) numTrans += 2;
-					
-				/*	char msg[30];
-					sprintf(msg, "numTrans: %d", numTrans);
-					tools_print(msg);   */
-					
-					colorNew.a = 255;
-					if(numTrans > 7) colorNew.a = 0;
-					
-					newData[newIndex] = graphics_make_color(colorNew.r, colorNew.g, colorNew.b, colorNew.a);			
+					if(merged)
+					{
+						uint8_t colorU0a = (oldData[ulIndex] & 0b1000000000000000) == 0 ? 0 : 1;
+						uint8_t colorU0b = (oldData[ulIndex] >> 2) & 0b11;
+						uint8_t colorU0g = (oldData[ulIndex] >> 7) & 0b111;
+						uint8_t colorU0r = (oldData[ulIndex] >> 12) & 0b11;
+						
+						uint8_t colorU1a = (oldData[urIndex] & 0b1000000000000000) == 0 ? 0 : 1;
+						uint8_t colorU1b = (oldData[urIndex] >> 2) & 0b11;
+						uint8_t colorU1g = (oldData[urIndex] >> 7) & 0b111;
+						uint8_t colorU1r = (oldData[urIndex] >> 12) & 0b11;
+						
+						uint8_t colorU2a = (oldData[llIndex] & 0b1000000000000000) == 0 ? 0 : 1;
+						uint8_t colorU2b = (oldData[llIndex] >> 2) & 0b11;
+						uint8_t colorU2g = (oldData[llIndex] >> 7) & 0b111;
+						uint8_t colorU2r = (oldData[llIndex] >> 12) & 0b11;
+						
+						uint8_t colorU3a = (oldData[lrIndex] & 0b1000000000000000) == 0 ? 0 : 1;
+						uint8_t colorU3b = (oldData[lrIndex] >> 2) & 0b11;
+						uint8_t colorU3g = (oldData[lrIndex] >> 7) & 0b111;
+						uint8_t colorU3r = (oldData[lrIndex] >> 12) & 0b11;
+
+						double colorUUpr = (double) colorU0r * leftShare + (double) colorU1r * rightShare;
+						double colorUUpg = (double) colorU0g * leftShare + (double) colorU1g * rightShare;
+						double colorUUpb = (double) colorU0b * leftShare + (double) colorU1b * rightShare;
+						uint8_t colorUUpa = colorU0a != 0 || colorU1a != 0;
+
+						double colorULowr = (double) colorU2r * leftShare + (double) colorU3r * rightShare;
+						double colorULowg = (double) colorU2g * leftShare + (double) colorU3g * rightShare;
+						double colorULowb = (double) colorU2b * leftShare + (double) colorU3b * rightShare;
+						uint8_t colorULowa = colorU2a != 0 || colorU3a != 0;
+
+						double colorUNewr = (double) colorULowr * lowerShare + (double) colorUUpr * upperShare;
+						double colorUNewg = (double) colorULowg * lowerShare + (double) colorUUpg * upperShare;
+						double colorUNewb = (double) colorULowb * lowerShare + (double) colorUUpb * upperShare;
+						uint8_t colorUNewa = colorULowa != 0 && colorUUpa != 0;
+
+						uint8_t colorL0a = (oldData[ulIndex] & 0b0100000000000000) == 0 ? 0 : 1;
+						uint8_t colorL0b = (oldData[ulIndex]) & 0b11;
+						uint8_t colorL0g = (oldData[ulIndex] >> 4) & 0b111;
+						uint8_t colorL0r = (oldData[ulIndex] >> 10) & 0b11;
+
+						uint8_t colorL1a = (oldData[urIndex] & 0b0100000000000000) == 0 ? 0 : 1;
+						uint8_t colorL1b = (oldData[urIndex]) & 0b11;
+						uint8_t colorL1g = (oldData[urIndex] >> 4) & 0b111;
+						uint8_t colorL1r = (oldData[urIndex] >> 10) & 0b11;
+
+						uint8_t colorL2a = (oldData[llIndex] & 0b0100000000000000) == 0 ? 0 : 1;
+						uint8_t colorL2b = (oldData[llIndex]) & 0b11;
+						uint8_t colorL2g = (oldData[llIndex] >> 4) & 0b111;
+						uint8_t colorL2r = (oldData[llIndex] >> 10) & 0b11;
+
+						uint8_t colorL3a = (oldData[lrIndex] & 0b0100000000000000) == 0 ? 0 : 1;
+						uint8_t colorL3b = (oldData[lrIndex]) & 0b11;
+						uint8_t colorL3g = (oldData[lrIndex] >> 4) & 0b111;
+						uint8_t colorL3r = (oldData[lrIndex] >> 10) & 0b11;
+
+						double colorLUpr = (double) colorL0r * leftShare + (double) colorL1r * rightShare;
+						double colorLUpg = (double) colorL0g * leftShare + (double) colorL1g * rightShare;
+						double colorLUpb = (double) colorL0b * leftShare + (double) colorL1b * rightShare;
+						uint8_t colorLUpa = colorL0a != 0 || colorL1a != 0;
+
+						double colorLLowr = (double) colorL2r * leftShare + (double) colorL3r * rightShare;
+						double colorLLowg = (double) colorL2g * leftShare + (double) colorL3g * rightShare;
+						double colorLLowb = (double) colorL2b * leftShare + (double) colorL3b * rightShare;
+						uint8_t colorLLowa = colorL2a != 0 || colorL3a != 0;
+						
+						double colorLNewr = (double) colorLLowr * lowerShare + (double) colorLUpr * upperShare;
+						double colorLNewg = (double) colorLLowg * lowerShare + (double) colorLUpg * upperShare;
+						double colorLNewb = (double) colorLLowb * lowerShare + (double) colorLUpb * upperShare;
+						uint8_t colorLNewa = colorLLowa != 0 && colorLUpa != 0;
+
+						newData[newIndex] =  (uint16_t) (( ((uint8_t)(colorUNewr) & 0b11) << 12) | ( ((uint8_t)(colorUNewg) & 0b111) << 7) | ( ((uint8_t)(colorUNewb) &0b11) << 2) | colorUNewa << 15);
+						newData[newIndex] |= (uint16_t) (( ((uint8_t)(colorLNewr) & 0b11) << 10) | ( ((uint8_t)(colorLNewg) & 0b111) << 4) |   ((uint8_t)(colorLNewb) &0b11) | colorLNewa << 14);
+
+					} else
+					{
+						color_t color0;
+						color0.a = (oldData[ulIndex]) << 7;
+						color0.b = (oldData[ulIndex]) << 2;
+						color0.g = (oldData[ulIndex]) >> 3;
+						color0.r = (oldData[ulIndex]) >> 8;
+						
+						color_t color1;
+						color1.a = (oldData[urIndex]) << 7;
+						color1.b = (oldData[urIndex]) << 2;
+						color1.g = (oldData[urIndex]) >> 3;
+						color1.r = (oldData[urIndex]) >> 8;
+						
+						color_t color2;
+						color2.a = (oldData[llIndex]) << 7;
+						color2.b = (oldData[llIndex]) << 2;
+						color2.g = (oldData[llIndex]) >> 3;
+						color2.r = (oldData[llIndex]) >> 8;
+						
+						color_t color3;
+						color3.a = (oldData[lrIndex]) << 7;
+						color3.b = (oldData[lrIndex]) << 2;
+						color3.g = (oldData[lrIndex]) >> 3;
+						color3.r = (oldData[lrIndex]) >> 8;
+						
+						uint8_t a4 = (oldData[ulIndex + 1]) << 7;
+						uint8_t a5 = (oldData[llIndex + 1]) << 7;
+						uint8_t a6 = (oldData[ulIndex + sprite->width]) << 7;
+						uint8_t a7 = (oldData[urIndex + sprite->width]) << 7;
+						
+						color_t colorUp;
+						colorUp.r = (double) color0.r * leftShare + (double) color1.r * rightShare;
+						colorUp.g = (double) color0.g * leftShare + (double) color1.g * rightShare;
+						colorUp.b = (double) color0.b * leftShare + (double) color1.b * rightShare;
+						
+						color_t colorLow;
+						colorLow.r = (double) color2.r * leftShare + (double) color3.r * rightShare;
+						colorLow.g = (double) color2.g * leftShare + (double) color3.g * rightShare;
+						colorLow.b = (double) color2.b * leftShare + (double) color3.b * rightShare;
+						
+						color_t colorNew;
+						colorNew.r = (double) colorLow.r * lowerShare + (double) colorUp.r * upperShare;
+						colorNew.g = (double) colorLow.g * lowerShare + (double) colorUp.g * upperShare;
+						colorNew.b = (double) colorLow.b * lowerShare + (double) colorUp.b * upperShare;
+						
+						int numTrans = 0;
+						if(color0.a == 0) numTrans++;
+						if(color1.a == 0) numTrans++;
+						if(color2.a == 0) numTrans++;
+						if(color3.a == 0) numTrans++;
+						if(a4 == 0) numTrans += 2;
+						if(a5 == 0) numTrans += 2;
+						if(a6 == 0) numTrans += 2;
+						if(a7 == 0) numTrans += 2;
+						
+					/*	char msg[30];
+						sprintf(msg, "numTrans: %d", numTrans);
+						tools_print(msg);   */
+						
+						colorNew.a = 255;
+						if(numTrans > 7) colorNew.a = 0;
+						
+						newData[newIndex] = graphics_make_color(colorNew.r, colorNew.g, colorNew.b, colorNew.a);
+					}			
 				}
 			}
 		break;

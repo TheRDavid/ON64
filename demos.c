@@ -23,19 +23,8 @@ int main(void)
 	tools_init("2.4.3", disp);
 	//sound_init(soundFiles, 4, 4);
 	int numItems = 11;
-	sprite_t* tracer_sprite = gfx_sprite_scale(gfx_load_sprite("tracer.sprite"), BILINEAR, 0.5f, TRUE);
-	sprite_t* tracer_sprite_O = gfx_sprite_scale(gfx_load_sprite("tracer.sprite"), BILINEAR, 0.5f, TRUE);
-	
-	/*
-	sprite_t* sprite1 = gfx_load_sprite("tracer.sprite");
-	sprite_t* sprite1_O = gfx_load_sprite("tracer.sprite");
-	sprite_t* sprite2 = gfx_load_sprite("tracer.sprite");
-	sprite_t* sprite2_O = gfx_load_sprite("tracer.sprite");
-	sprite_t* sprite3 = gfx_load_sprite("tracer.sprite");
-	sprite_t* sprite3_O = gfx_load_sprite("tracer.sprite");
-	sprite_t* sprite4 = gfx_load_sprite("tracer.sprite");
-	sprite_t* sprite4_O = gfx_load_sprite("tracer.sprite");
-	sprite_t* aniSprite = gfx_load_sprite("tracer.sprite");*/
+	sprite_t* tracer_sprite = gfx_sprite_scale(gfx_load_sprite("tracer.sprite"), BILINEAR, 0.5f, TRUE, FALSE);
+	sprite_t* tracer_sprite_O = gfx_sprite_scale(gfx_load_sprite("tracer.sprite"), BILINEAR, 0.5f, TRUE, FALSE);
 
 	sprite_t* sprite1 = gfx_load_sprite("trainer_biker_merged_64x64.sprite");
 	sprite_t* sprite1_O = gfx_load_sprite("trainer_biker_merged_64x64.sprite");
@@ -192,62 +181,6 @@ int main(void)
 			sprite3 = gfx_copy_sprite(sprite3_O);
 			sprite4 = gfx_copy_sprite(sprite4_O);
 			sweatSmileSprite = gfx_copy_sprite(sweatSmileSprite_O);
-
-			/*sprite1 = malloc (sizeof(uint16_t) 
-								* (int) (sprite1_O->width)
-								* (int) (sprite1_O->height)
-								+ sizeof(sprite_t));
-			sprite2 = malloc (sizeof(uint16_t) 
-								* (int) (sprite2_O->width)
-								* (int) (sprite2_O->height)
-								+ sizeof(sprite_t));
-			sprite3 = malloc (sizeof(uint16_t) 
-								* (int) (sprite3_O->width)
-								* (int) (sprite3_O->height)
-								+ sizeof(sprite_t));
-			sprite4 = malloc (sizeof(uint16_t) 
-								* (int) (sprite4_O->width)
-								* (int) (sprite4_O->height)
-								+ sizeof(sprite_t));
-			sweatSmileSprite = malloc (sizeof(uint16_t) 
-								* (int) (sweatSmileSprite_O->width)
-								* (int) (sweatSmileSprite_O->height)
-								+ sizeof(sprite_t));
-
-			uint16_t* data1 = (uint16_t *) sprite1->data;
-			uint16_t* data2 = (uint16_t *) sprite2->data;
-			uint16_t* data3 = (uint16_t *) sprite3->data;
-			uint16_t* data4 = (uint16_t *) sprite4->data;
-			uint16_t* data5 = (uint16_t *) sweatSmileSprite->data;
-
-			uint16_t* O_data1 = (uint16_t *) sprite1_O->data;
-			uint16_t* O_data2 = (uint16_t *) sprite2_O->data;
-			uint16_t* O_data3 = (uint16_t *) sprite3_O->data;
-			uint16_t* O_data4 = (uint16_t *) sprite4_O->data;
-			uint16_t* O_data5 = (uint16_t *) sweatSmileSprite_O->data;
-
-			sprite1->width = sprite1_O->width;
-			sprite2->width = sprite2_O->width;
-			sprite3->width = sprite3_O->width;
-			sprite4->width = sprite4_O->width;
-			sweatSmileSprite->width = sweatSmileSprite_O->width;
-
-			sprite1->height = sprite1_O->height;
-			sprite2->height = sprite2_O->height;
-			sprite3->height = sprite3_O->height;
-			sprite4->height = sprite4_O->height;
-			sweatSmileSprite->height = sweatSmileSprite_O->height;
-
-			int l = sprite1->width * sprite1->height;
-			for(int i = 0; i < l; i++) data1[i] = O_data1[i];
-			l = sprite2->width * sprite2->height;
-			for(int i = 0; i < l; i++) data2[i] = O_data2[i];
-			l = sprite3->width * sprite3->height;
-			for(int i = 0; i < l; i++) data3[i] = O_data3[i];
-			l = sprite4->width * sprite4->height;
-			for(int i = 0; i < l; i++) data4[i] = O_data4[i];
-			l = sweatSmileSprite->width * sweatSmileSprite->height;
-			for(int i = 0; i < l; i++) data5[i] = O_data5[i];*/
 		}
 
 		if(scenario == 0)
@@ -273,27 +206,27 @@ int main(void)
 			
 			if(keys.c[0].up)
 			{
-				sprite1 = gfx_sprite_scale(sprite1, BILINEAR, 1.2f, 1);
-				sprite2 = gfx_sprite_scale(sprite2, BILINEAR, 1.2f, 1);
-				sweatSmileSprite = gfx_sprite_scale(sweatSmileSprite, BILINEAR, 1.2f, 1);
+				sprite1 = gfx_sprite_scale(sprite1, BILINEAR, 1.2f, 1, TRUE);
+				sprite2 = gfx_sprite_scale(sprite2, BILINEAR, 1.2f, 1, TRUE);
+				sweatSmileSprite = gfx_sprite_scale(sweatSmileSprite, BILINEAR, 1.2f, 1, FALSE);
 			}
 			if(keys.c[0].down)
 			{ 
-				sprite1 = gfx_sprite_scale(sprite1, BILINEAR, 0.8f, 1);
-				sprite2 = gfx_sprite_scale(sprite2, BILINEAR, 0.8f, 1);
-				sweatSmileSprite = gfx_sprite_scale(sweatSmileSprite, BILINEAR, 0.8f, 1);
+				sprite1 = gfx_sprite_scale(sprite1, BILINEAR, 0.8f, 1, TRUE);
+				sprite2 = gfx_sprite_scale(sprite2, BILINEAR, 0.8f, 1, TRUE);
+				sweatSmileSprite = gfx_sprite_scale(sweatSmileSprite, BILINEAR, 0.8f, 1, FALSE);
 			}
 			if(keys.c[0].C_up)
 			{ 
-				sprite1 = gfx_sprite_scale(sprite1, NEAREST_NEIGHBOUR, 1.2f, 1);
-				sprite2 = gfx_sprite_scale(sprite2, NEAREST_NEIGHBOUR, 1.2f, 1);
-				sweatSmileSprite = gfx_sprite_scale(sweatSmileSprite, NEAREST_NEIGHBOUR, 1.2f, 1);
+				sprite1 = gfx_sprite_scale(sprite1, NEAREST_NEIGHBOUR, 1.2f, 1, TRUE);
+				sprite2 = gfx_sprite_scale(sprite2, NEAREST_NEIGHBOUR, 1.2f, 1, TRUE);
+				sweatSmileSprite = gfx_sprite_scale(sweatSmileSprite, NEAREST_NEIGHBOUR, 1.2f, 1, FALSE);
 			}
 			if(keys.c[0].C_down)
 			{ 
-				sprite1 = gfx_sprite_scale(sprite1, NEAREST_NEIGHBOUR, 0.8f, 1);
-				sprite2 = gfx_sprite_scale(sprite2, NEAREST_NEIGHBOUR, 0.8f, 1);
-				sweatSmileSprite = gfx_sprite_scale(sweatSmileSprite, NEAREST_NEIGHBOUR, 0.8f, 1);
+				sprite1 = gfx_sprite_scale(sprite1, NEAREST_NEIGHBOUR, 0.8f, 1, TRUE);
+				sprite2 = gfx_sprite_scale(sprite2, NEAREST_NEIGHBOUR, 0.8f, 1, TRUE);
+				sweatSmileSprite = gfx_sprite_scale(sweatSmileSprite, NEAREST_NEIGHBOUR, 0.8f, 1, FALSE);
 			}
 			if(keys.c[0].Z) scenario = -1;
 			gfx_draw_merged_sprite(disp, sprite1, imgX + ZERO_X, imgY + ZERO_Y, UPPER_LAYER);
@@ -438,8 +371,8 @@ int main(void)
 		{
 			keys = get_keys_down();
 			if(keys.c[0].A) aniStep++;
-			if(keys.c[0].C_down) aniSprite = gfx_sprite_scale(aniSprite, BILINEAR, 0.8f, 1);
-			if(keys.c[0].C_up) aniSprite = gfx_sprite_scale(aniSprite, BILINEAR, 1.2f, 1);
+			if(keys.c[0].C_down) aniSprite = gfx_sprite_scale(aniSprite, BILINEAR, 0.8f, 1, TRUE);
+			if(keys.c[0].C_up) aniSprite = gfx_sprite_scale(aniSprite, BILINEAR, 1.2f, 1, TRUE);
 			aniStep = aniStep > 11 ? 0 : aniStep;
 			gfx_draw_merged_sprite_stride( disp, aniSprite, ZERO_X + 10, ZERO_Y + 10, aniStep);
 			aniStep++;

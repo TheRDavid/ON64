@@ -83,14 +83,15 @@ sprite_t* gfx_copy_sprite(sprite_t* original);
 
 /**
  * Scales by the given factor according to the given mode
- * TODO: Scaling the slices as well (for animated sprites)
  * 
  * sprite - the sprite to scale
  * mode - scaling mode (BILINEAR or nearest neighbour)
+ * merged - is it a compressed sprite? (influences bilinear interpolation)
+ * -> scaling merged images takes more time!
  * 
  * returns the new sprite (since it has a new array)
  */ 
-sprite_t* gfx_sprite_scale(sprite_t* sprite, gfx_scaleMode mode, float factor, int freeOriginal);
+sprite_t* gfx_sprite_scale(sprite_t* sprite, gfx_scaleMode mode, float factor, int freeOriginal, int merged);
 
 /**
  * Rotates by degree
