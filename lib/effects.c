@@ -13,55 +13,57 @@
 #include <math.h>
 #include <effects.h>
 
-void fx_sprite_fade(sprite_t* sprite, uint8_t offset, int merged)
+void fx_sprite_fade(sprite_t* sprite, int offset, int merged)
 {
-	offset *= 8;
 	int idxMax = sprite->width * sprite->height;
 	uint16_t *data = (uint16_t *)sprite->data;
 	if(merged)
 		for(int idx = 0; idx < idxMax; idx++)
 		{
-			int8_t colorUb = (data[idx] >> 2) & 0b11;
-			int8_t colorUg = (data[idx] >> 7) & 0b111;
-			int8_t colorUr = (data[idx] >> 12) & 0b11;
-			int8_t colorLg = (data[idx] >> 4) & 0b111;
-			int8_t colorLr = (data[idx] >> 10) & 0b11;
-			int8_t colorLb = (data[idx] & 0b11);
+			int colorUb = (data[idx] >> 2) & 0b11;
+			int colorUg = (data[idx] >> 7) & 0b111;
+			int colorUr = (data[idx] >> 12) & 0b11;
+			int colorLg = (data[idx] >> 4) & 0b111;
+			int colorLr = (data[idx] >> 10) & 0b11;
+			int colorLb = (data[idx] & 0b11);
+			if(colorUb + offset >= 0 && colorUb + offset < 4) // max of 2 bits
+					colorUb = colorUb + offset;
 
-			if(idx == sprite->width / 2 + sprite->width * (sprite->height / 2))
+				if(colorUg + offset >= 0 && colorUg + offset < 8) // max of 3 bits
+					colorUg = colorUg + offset;
+
+				if(colorUr + offset >= 0 && colorUr + offset < 4) // max of 2 bits
+					colorUr = colorUr + offset;
+
+				if(colorLb + offset >= 0 && colorLb + offset < 4) // max of 2 bits
+					colorLb = colorLb + offset;
+
+				if(colorLg + offset >= 0 && colorLg + offset < 8) // max of 3 bits
+					colorLg = colorLg + offset;
+
+				if(colorLr + offset >= 0 && colorLr + offset < 4) // max of 2 bits
+					colorLr = colorLr + offset;
+
+			/*if(idx == sprite->width / 2 + sprite->width * (sprite->height / 2))
 			{
 
 				char msg[40];
 
+				sprintf(msg, "offset: %d", offset);
+				tools_print(msg);
 				sprintf(msg, "before U: %d,%d,%d", colorUr,colorUg,colorUb);
 				tools_print(msg);
 				sprintf(msg, "before L: %d,%d,%d", colorLr,colorLg,colorLb);
 				tools_print(msg);
 
-				if(colorUb + offset >= 0 && colorUb + offset < 4) // max of 2 bits
-					colorUb += offset;
-
-				if(colorUg + offset >= 0 && colorUg + offset < 8) // max of 3 bits
-					colorUg += offset;
-
-				if(colorUr + offset >= 0 && colorUr + offset < 4) // max of 2 bits
-					colorUr += offset;
-
-				if(colorLb + offset >= 0 && colorLb + offset < 4) // max of 2 bits
-					colorLb += offset;
-
-				if(colorLg + offset >= 0 && colorLg + offset < 8) // max of 3 bits
-					colorLg += offset;
-
-				if(colorLr + offset >= 0 && colorLr + offset < 4) // max of 2 bits
-					colorLr += offset;
+				
 
 				sprintf(msg, "after U: %d,%d,%d", colorUr,colorUg,colorUb);
 				tools_print(msg);
 				sprintf(msg, "after L: %d,%d,%d", colorLr,colorLg,colorLb);
 				tools_print(msg);
 
-			}
+			}*/
 			
 			data[idx] =  	/*upper alpha*/	 (data[idx] & 0b1000000000000000)
 						 	/*lower alpha*/ |(data[idx] & 0b0100000000000000)
@@ -73,9 +75,10 @@ void fx_sprite_fade(sprite_t* sprite, uint8_t offset, int merged)
 							/*upper blue*/ 	| colorLb;
 		}
 	else
+	{
+		offset *= 8;
 		for(int idx = 0; idx < idxMax; idx++)
 		{
-			
 			uint8_t a = (data[idx]) << 7;
 			uint8_t b = (data[idx]) << 2;
 			uint8_t g = (data[idx]) >> 3;
@@ -108,6 +111,7 @@ void fx_sprite_fade(sprite_t* sprite, uint8_t offset, int merged)
 			data[idx] = graphics_make_color(r,g,b,a);
 			
 		}
+	}
 }
 /**
  * Irrelevant for now - only works for 32 bit!
