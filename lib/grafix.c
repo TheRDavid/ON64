@@ -86,7 +86,7 @@ sprite_t* gfx_copy_sprite(sprite_t* original)
 	return newSprite;
 }
 
-sprite_t* gfx_sprite_scale(sprite_t* sprite, gfx_scaleMode mode, float factor, int merged, int freeOriginal)
+sprite_t* gfx_sprite_scale(sprite_t* sprite, gfx_interpolationMode mode, float factor, int merged, int freeOriginal)
 {	
 	uint16_t newWidth = (uint16_t) round(sprite->width * factor);
 	uint16_t newHeight = (uint16_t) round(sprite->height * factor);
@@ -318,7 +318,7 @@ sprite_t* gfx_sprite_scale(sprite_t* sprite, gfx_scaleMode mode, float factor, i
 	return newSprite;
 }
 
-sprite_t* gfx_sprite_rotate(sprite_t* sprite, int deg, int freeOriginal)
+sprite_t* gfx_sprite_rotate(sprite_t* sprite, gfx_interpolationMode mode, int deg, int freeOriginal)
 {
 	while(deg < 0) deg += 360;
 	deg%=360;
@@ -343,29 +343,38 @@ sprite_t* gfx_sprite_rotate(sprite_t* sprite, int deg, int freeOriginal)
 	uint16_t *newData = (uint16_t *)newSprite->data;
 	
 
-	
-	for(int row = 0; row < sprite->height; row++) // for every row in the picture ...
+	switch(mode)
 	{
-		for(int col = 0; col < sprite->width; col++) // ... and every col in each row ...
-		{
-			int xt = col - widthDivBy2, yt = row - heightDivBy2;
-			
-			int xn = (int) round(xt * cDeg - yt * sDeg) + widthDivBy2; // calculate the new COORDINATES
-			int yn = (int) round(xt * sDeg + yt * cDeg) + heightDivBy2;
-			
-			int spriteIndex = yn * sprite->width + xn;
-			int newIdx = row * sprite->width + col;
-			int dx = abs(widthDivBy2 - xn);
-			int dy = abs(heightDivBy2 - yn);
-			int distance = sqrt(dx * dx + dy * dy);
-			if(spriteIndex >= 0 && spriteIndex < sprite->width * sprite->height)	
-				newData[newIdx] = oldData[spriteIndex];		
-			// check if distance to center is bigger than radius
-			if(distance > widthDivBy2 || distance > heightDivBy2)
-					newData[newIdx] = 0;	
-		}
-	}
+		case NEAREST_NEIGHBOUR:
+	
+			for(int row = 0; row < sprite->height; row++) // for every row in the picture ...
+			{
+				for(int col = 0; col < sprite->width; col++) // ... and every col in each row ...
+				{
+					int xt = col - widthDivBy2, yt = row - heightDivBy2;
+					
+					int xn = (int) round(xt * cDeg - yt * sDeg) + widthDivBy2; // calculate the new COORDINATES
+					int yn = (int) round(xt * sDeg + yt * cDeg) + heightDivBy2;
+					
+					int spriteIndex = yn * sprite->width + xn;
+					int newIdx = row * sprite->width + col;
+					int dx = abs(widthDivBy2 - xn);
+					int dy = abs(heightDivBy2 - yn);
+					int distance = sqrt(dx * dx + dy * dy);
+					if(spriteIndex >= 0 && spriteIndex < sprite->width * sprite->height)	
+						newData[newIdx] = oldData[spriteIndex];		
+					// check if distance to center is bigger than radius
+					if(distance > widthDivBy2 || distance > heightDivBy2)
+							newData[newIdx] = 0;	
+				}
+			}
+			break;
+		case BILINEAR:
+			/* NOT YET IMPLEMENTED */
+			break;
 
+		default: break;
+	}
 	
 	if(freeOriginal)
 		free(sprite);

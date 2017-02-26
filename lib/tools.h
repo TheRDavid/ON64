@@ -7,7 +7,6 @@
 #define __TOOLS_H
 #define TRUE 1
 #define FALSE 0
-#define MS_FOR_25_FPS 40000
 
 int consoleIndex;
 
@@ -16,7 +15,7 @@ int consoleIndex;
  * 
  * ver - version
  */
-void tools_init(char *ver, display_context_t d);
+void tools_init(char *ver, display_context_t d, int showFPS);
 
 /**
  * refresh start time, play audio (if need be) and check input 
@@ -36,5 +35,7 @@ void tools_show(display_context_t display, int debug, int consoleScroll);
  * 
  */ 
 void tools_print(char *msg);
+
+void fpsUpdater();
 
 #endif

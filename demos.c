@@ -20,7 +20,7 @@ int main(void)
 	static display_context_t disp = 0; 
 	//char *soundFiles[5] =  {"rom://music.mod", "rom://pacman_intro.wav", "rom://pacman_x.wav", "rom://pacman_x_s.wav"};
 	//int SOUND_MUSIC = 0;//, SOUND_EFFECT = 1; //, SOUND_EDD_DOING = 2;
-	tools_init("2.4.3", disp);
+	tools_init("2.4.3", disp, TRUE);
 	//sound_init(soundFiles, 4, 4);
 	int numItems = 11;
 	sprite_t* tracer_sprite = gfx_sprite_scale(gfx_load_sprite("tracer.sprite"), BILINEAR, 0.5f, TRUE, FALSE);
@@ -156,6 +156,7 @@ int main(void)
 	triangle2.color = colors[colorSelectors[5]];
 	triangle2.fill = FALSE;
 	
+
 	// GAME LOOP
 	while(1) 
 	{
@@ -164,6 +165,7 @@ int main(void)
 		graphics_fill_screen( disp, 0 );
 		
 		tools_update();
+		graphics_set_color(GFX_COLOR_WHITE, GFX_COLOR_BLACK);
 		struct controller_data keys = get_keys_down();
 		
 		if(keys.c[0].start)
@@ -244,46 +246,46 @@ int main(void)
 			if(keys.c[0].left)
 			{ 
 				--degree;
-				rot = 1;
+				rot = TRUE;
 			}
 			
 			if(keys.c[0].right)
 			{ 
 				++degree;
-				rot = 1;
+				rot = TRUE;
 			}
 			
 			if(keys.c[0].C_up)
 			{
 				degree = 0;
-				rot = 1;
+				rot = TRUE;
 			}
 			
 			if(keys.c[0].C_down)
 			{
 				degree = 180;
-				rot = 1;
+				rot = TRUE;
 			}
 			
 			if(keys.c[0].C_left)
 			{
 				degree = 270;
-				rot = 1;
+				rot = TRUE;
 			}
 			
 			if(keys.c[0].C_right)
 			{
 				degree = 90;
-				rot = 1;
+				rot = TRUE;
 			}
 			
 			if(rot)
 			{
 				free(sprite1);
 				free(sprite2);
-				sprite1 = gfx_sprite_rotate(sprite1_O, degree, FALSE);
-				sprite2 = gfx_sprite_rotate(sprite2_O, degree, FALSE);
-				sweatSmileSprite = gfx_sprite_rotate(sweatSmileSprite, 5, TRUE);
+				sprite1 = gfx_sprite_rotate(sprite1_O, NEAREST_NEIGHBOUR, degree, FALSE);
+				sprite2 = gfx_sprite_rotate(sprite2_O, NEAREST_NEIGHBOUR, degree, FALSE);
+				sweatSmileSprite = gfx_sprite_rotate(sweatSmileSprite, NEAREST_NEIGHBOUR, 5, TRUE);
 			}
 			
 			graphics_draw_text(disp, 10+ZERO_X , 190+ZERO_Y , "Use DPad (left / right) to rotate");
@@ -519,7 +521,7 @@ int main(void)
 		{
 			for(int i = 0; i < numItems; i++)
 			{
-				int x = 20 + (i % 2) * 120, y = ZERO_Y + (i % numItems) * 13;
+				int x = 60 + (i % 2) * 120, y = ZERO_Y + 15 + (i % numItems) * 13;
 				fg = GFX_COLOR_WHITE;
 				bg = GFX_COLOR_BLACK;
 				if(i == selectedItem)

@@ -28,7 +28,7 @@ typedef enum
 {
     BILINEAR,
     NEAREST_NEIGHBOUR
-} gfx_scaleMode;
+} gfx_interpolationMode;
 
 typedef struct
 {
@@ -91,14 +91,14 @@ sprite_t* gfx_copy_sprite(sprite_t* original);
  * 
  * returns the new sprite (since it has a new array)
  */ 
-sprite_t* gfx_sprite_scale(sprite_t* sprite, gfx_scaleMode mode, float factor, int merged, int freeOriginal);
+sprite_t* gfx_sprite_scale(sprite_t* sprite, gfx_interpolationMode mode, float factor, int merged, int freeOriginal);
 
 /**
  * Rotates by degree
  * 
  * returns the new sprite (since the array itself was transformed)
  */ 
-sprite_t* gfx_sprite_rotate(sprite_t* sprite, int deg, int freeOriginal);
+sprite_t* gfx_sprite_rotate(sprite_t* sprite, gfx_interpolationMode mode, int deg, int freeOriginal);
 
 /**
  *  Flips the given sprite vertically

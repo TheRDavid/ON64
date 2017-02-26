@@ -20,9 +20,13 @@ char *debugMessages[1024];
 display_context_t display;
 int currentConsolePrint = 0;
 int maxCharsPerLine = 35; // Text output max (per line)
+ushort frames = 0;
+char framesDisplay[30];
+int displayFPS;
 
-void tools_init(char *ver, display_context_t d)
+void tools_init(char *ver, display_context_t d, int showFPS)
 {
+	displayFPS = showFPS;
 	consoleIndex = 0;
 	boxDir = 5;
 	boxX = 0;
@@ -50,6 +54,9 @@ void tools_init(char *ver, display_context_t d)
 	char msg[32];
 	sprintf(msg, "v%s", ver);
 	tools_print(msg);
+
+	if(displayFPS)
+		new_timer(TIMER_TICKS(1000000), TF_CONTINUOUS, fpsUpdater);
 }
 
 void tools_frameUpdate()
@@ -125,9 +132,16 @@ void tools_show(display_context_t display, int debug, int consoleScroll)
  
 		}
 	}
+
+	if(displayFPS)
+	{
+		graphics_set_color(GFX_COLOR_RED, GFX_COLOR_BLACK);
+		graphics_draw_text(display, ZERO_X , 10 +ZERO_Y, framesDisplay);
+	}
 	gfx_finish();
 	// Update Display
 	display_show(display);
+	frames++;
 }
 
 void tools_print(char msg[])
@@ -150,4 +164,10 @@ void tools_print(char msg[])
 		debugMessages[numDebugMessages - 1] = malloc(sizeof(char)*64);
 		strcpy(debugMessages[numDebugMessages - 1], msg); */
 	}
+}
+
+void fpsUpdater()
+{
+	sprintf(framesDisplay, "FPS: %d", frames);
+	frames = 0;
 }
