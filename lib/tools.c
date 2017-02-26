@@ -132,12 +132,12 @@ void tools_show(display_context_t display, int debug, int consoleScroll)
 	if(displayFPS)
 	{
 		graphics_set_color(GFX_COLOR_RED, GFX_COLOR_BLACK);
-		graphics_draw_text(display, ZERO_X , 10 +ZERO_Y, framesDisplay);
+		graphics_draw_text(display, ZERO_X , ZERO_Y, framesDisplay);
 	}
 
 	if(displayGfxBytes)
 	{
-		graphics_draw_text(display, ZERO_X + 70 , 10 +ZERO_Y, bytesDisplay);
+		graphics_draw_text(display, ZERO_X + 70 , ZERO_Y, bytesDisplay);
 	}
 
 	gfx_finish();

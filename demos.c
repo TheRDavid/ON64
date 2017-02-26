@@ -22,7 +22,7 @@ int main(void)
 	//int SOUND_MUSIC = 0;//, SOUND_EFFECT = 1; //, SOUND_EDD_DOING = 2;
 	tools_init("2.4.3", disp, TRUE, TRUE);
 	//sound_init(soundFiles, 4, 4);
-	int numItems = 11;
+	int numItems = 13;
 	sprite_t* tracer_sprite = gfx_sprite_scale(gfx_load_sprite("tracer.sprite"), BILINEAR, 0.5f, TRUE, FALSE);
 	sprite_t* tracer_sprite_O = gfx_sprite_scale(gfx_load_sprite("tracer.sprite"), BILINEAR, 0.5f, TRUE, FALSE);
 
@@ -42,7 +42,7 @@ int main(void)
 	int aniStep = 0;
 	int imgX = 0, imgY = 0, degree = 0;
 	
-	char menuItems[12][40] = { 	{"Move"},
+	char menuItems[13][40] = { 	{"Move"},
 								{"Scale"},
 								{"Rotate"},
 								{"Flip"},
@@ -52,7 +52,9 @@ int main(void)
 								{"Shapes"},
 								{"Measure"},
 								{"Joystick"},
-								{"Distortion"}  }; 
+								{"Distortion"},
+								{"Performance"},
+								{"Memory Stress"}  }; 
 								
 
 	int debug = 1;
@@ -62,7 +64,7 @@ int main(void)
 	int scenario = -1;
 	int cursorX = 100, cursorY = 100, cursorTextSpacing = 30;
 	degree = 0;
-	int numLines = 12;
+	int numLines = 14, screenFill = 0;
 	char msgs[numLines][40];
 	int jX = 0, jY = 0;
 
@@ -99,7 +101,7 @@ int main(void)
 							tracer_sprite->width, tracer_sprite->height, 
 							0, tracer_sprite->height};
 	int selectedCorner = 0;
-	
+	char screenFillView[30];
 	gfx_shape_rectangle rect1, rect2;
 	
 	rect1.x = ZERO_X;
@@ -507,11 +509,33 @@ int main(void)
 					GFX_COLOR_RED);
 
 			if(keys.c[0].Z) scenario = -1;
+		} else if(scenario == 11)
+		{
+			keys = get_keys_pressed();
+			if(keys.c[0].up)
+			{
+				if(screenFill != 320)
+				{
+					screenFill += 1;
+				}
+			} else if(keys.c[0].down)
+			{
+				if(screenFill != 0)
+				{
+					screenFill -= 1;
+				}
+			}
+			sprintf(screenFillView, "%d%%", (int)((float)screenFill / 3.2f));
+			for(int x = 0; x < screenFill; x++)
+				for(int y = 0; y < 240; y++)
+					graphics_draw_pixel_trans(disp, x, y, GFX_COLOR_DBLUE);
+			graphics_draw_text(disp, 140, 110, screenFillView);
+			if(keys.c[0].Z) scenario = -1;
 		} else
 		{
 			for(int i = 0; i < numItems; i++)
 			{
-				int x = 60 + (i % 2) * 120, y = ZERO_Y + 15 + (i % numItems) * 13;
+				int x = 60 + (i % 2) * 120, y = ZERO_Y + 15 + (i % numItems) * 7;
 				fg = GFX_COLOR_WHITE;
 				bg = GFX_COLOR_BLACK;
 				if(i == selectedItem)
