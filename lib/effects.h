@@ -18,7 +18,7 @@ sprite_t* fx_sprite_whirl(sprite_t* sprite, int deg, int freeOriginal);
  *  - Makes completely invisible pixels gray / white!
  *  Don't want all that? - Use fx_sprite_Fade_Alpha() instead
  */ 
-void fx_sprite_fade(sprite_t* sprite, int offset);
+void fx_sprite_fade(sprite_t* sprite, uint8_t offset, int merged);
 
 /**
  *  adds offset to the alpha values (only a)

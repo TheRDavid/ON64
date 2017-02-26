@@ -86,7 +86,7 @@ sprite_t* gfx_copy_sprite(sprite_t* original)
 	return newSprite;
 }
 
-sprite_t* gfx_sprite_scale(sprite_t* sprite, gfx_scaleMode mode, float factor, int freeOriginal, int merged)
+sprite_t* gfx_sprite_scale(sprite_t* sprite, gfx_scaleMode mode, float factor, int merged, int freeOriginal)
 {	
 	uint16_t newWidth = (uint16_t) round(sprite->width * factor);
 	uint16_t newHeight = (uint16_t) round(sprite->height * factor);
@@ -303,10 +303,6 @@ sprite_t* gfx_sprite_scale(sprite_t* sprite, gfx_scaleMode mode, float factor, i
 						if(a6 == 0) numTrans += 2;
 						if(a7 == 0) numTrans += 2;
 						
-					/*	char msg[30];
-						sprintf(msg, "numTrans: %d", numTrans);
-						tools_print(msg);   */
-						
 						colorNew.a = 255;
 						if(numTrans > 7) colorNew.a = 0;
 						
@@ -346,7 +342,9 @@ sprite_t* gfx_sprite_rotate(sprite_t* sprite, int deg, int freeOriginal)
 	
 	uint16_t *newData = (uint16_t *)newSprite->data;
 	
-	for(int row = 0; row < sprite->height; row++) // for every row in the old picture ...
+
+	
+	for(int row = 0; row < sprite->height; row++) // for every row in the picture ...
 	{
 		for(int col = 0; col < sprite->width; col++) // ... and every col in each row ...
 		{
@@ -357,21 +355,17 @@ sprite_t* gfx_sprite_rotate(sprite_t* sprite, int deg, int freeOriginal)
 			
 			int spriteIndex = yn * sprite->width + xn;
 			int newIdx = row * sprite->width + col;
-			if(spriteIndex >= 0 && spriteIndex < sprite->width * sprite->height)
-			{
-				
-				// check if distance to center is bigger than radius
-				int dx = abs(widthDivBy2 - xn);
-				int dy = abs(heightDivBy2 - yn);
-				int distance = sqrt(dx * dx + dy * dy);
-				
-				if(!(distance > widthDivBy2 && distance > heightDivBy2))
-					newData[newIdx] = oldData[spriteIndex];
-				else newData[newIdx] = 0;
-			} else newData[newIdx] = 0;
-			
+			int dx = abs(widthDivBy2 - xn);
+			int dy = abs(heightDivBy2 - yn);
+			int distance = sqrt(dx * dx + dy * dy);
+			if(spriteIndex >= 0 && spriteIndex < sprite->width * sprite->height)	
+				newData[newIdx] = oldData[spriteIndex];		
+			// check if distance to center is bigger than radius
+			if(distance > widthDivBy2 || distance > heightDivBy2)
+					newData[newIdx] = 0;	
 		}
 	}
+
 	
 	if(freeOriginal)
 		free(sprite);

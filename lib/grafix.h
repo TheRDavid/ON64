@@ -91,7 +91,7 @@ sprite_t* gfx_copy_sprite(sprite_t* original);
  * 
  * returns the new sprite (since it has a new array)
  */ 
-sprite_t* gfx_sprite_scale(sprite_t* sprite, gfx_scaleMode mode, float factor, int freeOriginal, int merged);
+sprite_t* gfx_sprite_scale(sprite_t* sprite, gfx_scaleMode mode, float factor, int merged, int freeOriginal);
 
 /**
  * Rotates by degree

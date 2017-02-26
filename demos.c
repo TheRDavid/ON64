@@ -206,27 +206,27 @@ int main(void)
 			
 			if(keys.c[0].up)
 			{
-				sprite1 = gfx_sprite_scale(sprite1, BILINEAR, 1.2f, 1, TRUE);
-				sprite2 = gfx_sprite_scale(sprite2, BILINEAR, 1.2f, 1, TRUE);
-				sweatSmileSprite = gfx_sprite_scale(sweatSmileSprite, BILINEAR, 1.2f, 1, FALSE);
+				sprite1 = gfx_sprite_scale(sprite1, BILINEAR, 1.2f, TRUE, TRUE);
+				sprite2 = gfx_sprite_scale(sprite2, BILINEAR, 1.2f, TRUE, TRUE);
+				sweatSmileSprite = gfx_sprite_scale(sweatSmileSprite, BILINEAR, 1.2f, FALSE, TRUE);
 			}
 			if(keys.c[0].down)
 			{ 
-				sprite1 = gfx_sprite_scale(sprite1, BILINEAR, 0.8f, 1, TRUE);
-				sprite2 = gfx_sprite_scale(sprite2, BILINEAR, 0.8f, 1, TRUE);
-				sweatSmileSprite = gfx_sprite_scale(sweatSmileSprite, BILINEAR, 0.8f, 1, FALSE);
+				sprite1 = gfx_sprite_scale(sprite1, BILINEAR, 0.8f, TRUE, TRUE);
+				sprite2 = gfx_sprite_scale(sprite2, BILINEAR, 0.8f, TRUE, TRUE);
+				sweatSmileSprite = gfx_sprite_scale(sweatSmileSprite, BILINEAR, 0.8f, FALSE, TRUE);
 			}
 			if(keys.c[0].C_up)
 			{ 
-				sprite1 = gfx_sprite_scale(sprite1, NEAREST_NEIGHBOUR, 1.2f, 1, TRUE);
-				sprite2 = gfx_sprite_scale(sprite2, NEAREST_NEIGHBOUR, 1.2f, 1, TRUE);
-				sweatSmileSprite = gfx_sprite_scale(sweatSmileSprite, NEAREST_NEIGHBOUR, 1.2f, 1, FALSE);
+				sprite1 = gfx_sprite_scale(sprite1, NEAREST_NEIGHBOUR, 1.2f, TRUE, TRUE);
+				sprite2 = gfx_sprite_scale(sprite2, NEAREST_NEIGHBOUR, 1.2f, TRUE, TRUE);
+				sweatSmileSprite = gfx_sprite_scale(sweatSmileSprite, NEAREST_NEIGHBOUR, 1.2f, FALSE, TRUE);
 			}
 			if(keys.c[0].C_down)
 			{ 
-				sprite1 = gfx_sprite_scale(sprite1, NEAREST_NEIGHBOUR, 0.8f, 1, TRUE);
-				sprite2 = gfx_sprite_scale(sprite2, NEAREST_NEIGHBOUR, 0.8f, 1, TRUE);
-				sweatSmileSprite = gfx_sprite_scale(sweatSmileSprite, NEAREST_NEIGHBOUR, 0.8f, 1, FALSE);
+				sprite1 = gfx_sprite_scale(sprite1, NEAREST_NEIGHBOUR, 0.8f, TRUE, TRUE);
+				sprite2 = gfx_sprite_scale(sprite2, NEAREST_NEIGHBOUR, 0.8f, TRUE, TRUE);
+				sweatSmileSprite = gfx_sprite_scale(sweatSmileSprite, NEAREST_NEIGHBOUR, 0.8f, FALSE, TRUE);
 			}
 			if(keys.c[0].Z) scenario = -1;
 			gfx_draw_merged_sprite(disp, sprite1, imgX + ZERO_X, imgY + ZERO_Y, UPPER_LAYER);
@@ -281,10 +281,9 @@ int main(void)
 			{
 				free(sprite1);
 				free(sprite2);
-				free(sweatSmileSprite);
+				sprite1 = gfx_sprite_rotate(sprite1_O, degree, FALSE);
 				sprite2 = gfx_sprite_rotate(sprite2_O, degree, FALSE);
-				sprite3 = gfx_sprite_rotate(sprite3_O, degree, FALSE);
-				sweatSmileSprite = gfx_sprite_rotate(sweatSmileSprite_O, degree, FALSE);
+				sweatSmileSprite = gfx_sprite_rotate(sweatSmileSprite, 5, TRUE);
 			}
 			
 			graphics_draw_text(disp, 10+ZERO_X , 190+ZERO_Y , "Use DPad (left / right) to rotate");
@@ -301,7 +300,7 @@ int main(void)
 
 			graphics_draw_sprite_trans(disp, imgX + ZERO_X + 128, imgY + ZERO_Y, sweatSmileSprite);
 			
-			gfx_draw_rectangle(disp, imgX + ZERO_X + 140, imgY + ZERO_Y, sprite2->width, sprite2->height, GFX_COLOR_RED, FALSE);
+			/*gfx_draw_rectangle(disp, imgX + ZERO_X + 140, imgY + ZERO_Y, sprite2->width, sprite2->height, GFX_COLOR_RED, FALSE);
 			gfx_draw_rectangle(disp, imgX + ZERO_X, imgY + ZERO_Y, sprite3->width, sprite3->height, GFX_COLOR_GREEN, FALSE);
 			gfx_draw_rectangle(disp, imgX + ZERO_X + 140, imgY + ZERO_Y + 100, sprite4->width, sprite4->height, GFX_COLOR_BLUE, FALSE);
 			
@@ -311,6 +310,7 @@ int main(void)
 				sprite3->width > sprite3->height ? sprite3->width / 2 : sprite3->height / 2, GFX_COLOR_GREEN, FALSE);
 			gfx_draw_circle(disp, imgX + ZERO_X + sprite4->width / 2 + 140, imgY + ZERO_Y + sprite4->height/2 + 100, 
 				sprite4->width > sprite4->height ? sprite4->width / 2 : sprite4->height / 2, GFX_COLOR_BLUE, FALSE);
+			*/
 		} else if(scenario == 3)
 		{
 			if(keys.c[0].A)
@@ -340,15 +340,15 @@ int main(void)
 			graphics_draw_text(disp, 10 + ZERO_X, 160 +ZERO_Y , "DPad (up/down) to fade rgb");
 			if(keys.c[0].up)
 			{
-				fx_sprite_fade(sprite1, 1);
-				fx_sprite_fade(sprite2, 1);
-				fx_sprite_fade(sweatSmileSprite, 1);
+				fx_sprite_fade(sprite1, 1, TRUE);
+				fx_sprite_fade(sprite2, 1, TRUE);
+				fx_sprite_fade(sweatSmileSprite, 1, FALSE);
 			}
 			if(keys.c[0].down)
 			{
-				fx_sprite_fade(sprite1, -1);
-				fx_sprite_fade(sprite2, -1);
-				fx_sprite_fade(sweatSmileSprite, -1);
+				fx_sprite_fade(sprite1, -1, TRUE);
+				fx_sprite_fade(sprite2, -1, TRUE);
+				fx_sprite_fade(sweatSmileSprite, -1, FALSE);
 			}
 			if(keys.c[0].Z) scenario = -1;
 			gfx_draw_merged_sprite(disp, sprite1, imgX + ZERO_X, imgY + ZERO_Y, UPPER_LAYER);
