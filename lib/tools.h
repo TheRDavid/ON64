@@ -11,11 +11,10 @@
 int consoleIndex;
 
 /**
- * INITIALIZE ALL THE THINGS for real now
+ * INITIALIZE ALL THE THINGS
  * 
- * ver - version
  */
-void tools_init(char *ver, display_context_t d, int showFPS);
+void tools_init(char *ver, display_context_t d, int showFPS, int showByteAllocation);
 
 /**
  * refresh start time, play audio (if need be) and check input 
@@ -36,6 +35,22 @@ void tools_show(display_context_t display, int debug, int consoleScroll);
  */ 
 void tools_print(char *msg);
 
+/**
+ * Update display text to show frames per second
+ *
+ */
 void fpsUpdater();
+
+/**
+ * Keep track of memory usage
+ *
+ */
+void tools_changeGfxBytes(int bytes);
+
+/**
+ * Free sprite & register freed memory
+ *
+ */
+void tools_free_sprite(sprite_t *sprite);
 
 #endif

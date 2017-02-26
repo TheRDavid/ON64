@@ -43,27 +43,6 @@ void fx_sprite_fade(sprite_t* sprite, int offset, int merged)
 
 				if(colorLr + offset >= 0 && colorLr + offset < 4) // max of 2 bits
 					colorLr = colorLr + offset;
-
-			/*if(idx == sprite->width / 2 + sprite->width * (sprite->height / 2))
-			{
-
-				char msg[40];
-
-				sprintf(msg, "offset: %d", offset);
-				tools_print(msg);
-				sprintf(msg, "before U: %d,%d,%d", colorUr,colorUg,colorUb);
-				tools_print(msg);
-				sprintf(msg, "before L: %d,%d,%d", colorLr,colorLg,colorLb);
-				tools_print(msg);
-
-				
-
-				sprintf(msg, "after U: %d,%d,%d", colorUr,colorUg,colorUb);
-				tools_print(msg);
-				sprintf(msg, "after L: %d,%d,%d", colorLr,colorLg,colorLb);
-				tools_print(msg);
-
-			}*/
 			
 			data[idx] =  	/*upper alpha*/	 (data[idx] & 0b1000000000000000)
 						 	/*lower alpha*/ |(data[idx] & 0b0100000000000000)

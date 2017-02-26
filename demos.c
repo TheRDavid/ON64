@@ -20,7 +20,7 @@ int main(void)
 	static display_context_t disp = 0; 
 	//char *soundFiles[5] =  {"rom://music.mod", "rom://pacman_intro.wav", "rom://pacman_x.wav", "rom://pacman_x_s.wav"};
 	//int SOUND_MUSIC = 0;//, SOUND_EFFECT = 1; //, SOUND_EDD_DOING = 2;
-	tools_init("2.4.3", disp, TRUE);
+	tools_init("2.4.3", disp, TRUE, TRUE);
 	//sound_init(soundFiles, 4, 4);
 	int numItems = 11;
 	sprite_t* tracer_sprite = gfx_sprite_scale(gfx_load_sprite("tracer.sprite"), BILINEAR, 0.5f, TRUE, FALSE);
@@ -31,12 +31,6 @@ int main(void)
 	
 	sprite_t* sprite2 = gfx_load_sprite("pokemonTitle_pokeball_merged_100x100.sprite");
 	sprite_t* sprite2_O = gfx_load_sprite("pokemonTitle_pokeball_merged_100x100.sprite");
-	
-	sprite_t* sprite3 = gfx_load_sprite("pikachu_abra_merged_160x120.sprite");
-	sprite_t* sprite3_O = gfx_load_sprite("pikachu_abra_merged_160x120.sprite");
-	
-	sprite_t* sprite4 = gfx_load_sprite("marrill_glurak_merged_320x240.sprite");
-	sprite_t* sprite4_O = gfx_load_sprite("marrill_glurak_merged_320x240.sprite");
 	
 	sprite_t* aniSprite = gfx_load_sprite("hoppel_anim_merged_156x113_6x2.sprite");
 
@@ -172,16 +166,12 @@ int main(void)
 		{
 			tools_print("resetting!");
 
-			free(sprite1);
-			free(sprite2);
-			free(sprite3);
-			free(sprite4);
-			free(sweatSmileSprite);
+			tools_free_sprite(sprite1);
+			tools_free_sprite(sprite2);
+			tools_free_sprite(sweatSmileSprite);
 
 			sprite1 = gfx_copy_sprite(sprite1_O);
 			sprite2 = gfx_copy_sprite(sprite2_O);
-			sprite3 = gfx_copy_sprite(sprite3_O);
-			sprite4 = gfx_copy_sprite(sprite4_O);
 			sweatSmileSprite = gfx_copy_sprite(sweatSmileSprite_O);
 		}
 
@@ -281,8 +271,8 @@ int main(void)
 			
 			if(rot)
 			{
-				free(sprite1);
-				free(sprite2);
+				tools_free_sprite(sprite1);
+				tools_free_sprite(sprite2);
 				sprite1 = gfx_sprite_rotate(sprite1_O, NEAREST_NEIGHBOUR, degree, FALSE);
 				sprite2 = gfx_sprite_rotate(sprite2_O, NEAREST_NEIGHBOUR, degree, FALSE);
 				sweatSmileSprite = gfx_sprite_rotate(sweatSmileSprite, NEAREST_NEIGHBOUR, 5, TRUE);

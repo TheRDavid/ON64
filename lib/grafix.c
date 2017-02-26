@@ -60,19 +60,23 @@ void gfx_finish()
 sprite_t* gfx_load_sprite(const char *const name)
 {
 	int fp = dfs_open(name);
-	sprite_t *newSprite = malloc( dfs_size( fp ) );
-	dfs_read( newSprite, 1, dfs_size( fp ), fp );
+	int newSize =  dfs_size( fp );
+	sprite_t *newSprite = malloc( newSize );
+	dfs_read( newSprite, 1, newSize, fp );
 	newSprite->bitdepth = bitDepth;
+	tools_changeGfxBytes(newSize);
 	dfs_close( fp );
 	return newSprite;
 }
 
 sprite_t* gfx_copy_sprite(sprite_t* original)
 {
-	sprite_t* newSprite = malloc (sizeof(uint16_t) 
-								* (int) (original->width)
-								* (int) (original->height)
-								+ sizeof(sprite_t));
+	int size = sizeof(uint16_t) 
+				* (int) (original->width)
+				* (int) (original->height)
+				+ sizeof(sprite_t);
+	sprite_t* newSprite = malloc (size);
+	tools_changeGfxBytes(size);
 	newSprite->width = original->width;
 	newSprite->height = original->height;
 	newSprite->hslices = original->hslices;
@@ -90,11 +94,15 @@ sprite_t* gfx_sprite_scale(sprite_t* sprite, gfx_interpolationMode mode, float f
 {	
 	uint16_t newWidth = (uint16_t) round(sprite->width * factor);
 	uint16_t newHeight = (uint16_t) round(sprite->height * factor);
-	
-	sprite_t* newSprite = malloc  (sizeof(uint16_t) 
-								* (int) (newWidth)
-								* (int) (newHeight)
-								+ sizeof(sprite_t));
+	int size = sizeof(uint16_t) 
+				* (int) (newWidth)
+				* (int) (newHeight)
+				+ sizeof(sprite_t);
+	char ms[50];
+	sprintf(ms, "%d pixels",newWidth*newHeight - sprite->width*sprite->height-newWidth);
+	tools_print(ms);
+	sprite_t* newSprite = malloc  (size);
+	tools_changeGfxBytes(size);
 	newSprite->width = newWidth; 
 	newSprite->height = newHeight;
 	newSprite->bitdepth = sprite->bitdepth;
@@ -314,7 +322,10 @@ sprite_t* gfx_sprite_scale(sprite_t* sprite, gfx_interpolationMode mode, float f
 		
 		default: break;
 	}
-	if(freeOriginal) free(sprite);
+	if(freeOriginal)
+	{ 
+		tools_free_sprite(sprite);
+	}
 	return newSprite;
 }
 
@@ -336,6 +347,9 @@ sprite_t* gfx_sprite_rotate(sprite_t* sprite, gfx_interpolationMode mode, int de
 	newSprite->hslices = sprite->hslices;
 	newSprite->vslices = sprite->vslices;
 	
+	int size = sizeof(sprite_t) + sizeof(uint16_t) * sprite->width * sprite->height;
+	tools_changeGfxBytes(size);
+
 	int widthDivBy2 = sprite->width / 2;
 	int heightDivBy2 = sprite->height / 2;
 	
@@ -377,7 +391,9 @@ sprite_t* gfx_sprite_rotate(sprite_t* sprite, gfx_interpolationMode mode, int de
 	}
 	
 	if(freeOriginal)
-		free(sprite);
+	{ 
+		tools_free_sprite(sprite);
+	}
 	return newSprite;
 }
 

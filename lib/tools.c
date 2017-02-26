@@ -21,11 +21,14 @@ display_context_t display;
 int currentConsolePrint = 0;
 int maxCharsPerLine = 35; // Text output max (per line)
 ushort frames = 0;
-char framesDisplay[30];
-int displayFPS;
+char framesDisplay[30], bytesDisplay[30];
+int displayFPS, displayGfxBytes;
+int gfxBytes = 0;
+int graphics_memory = 1024 * 1024 * 3.5f; // 3.5 MB
 
-void tools_init(char *ver, display_context_t d, int showFPS)
+void tools_init(char *ver, display_context_t d, int showFPS, int showByteAllocation)
 {
+	displayGfxBytes = showByteAllocation;
 	displayFPS = showFPS;
 	consoleIndex = 0;
 	boxDir = 5;
@@ -57,13 +60,6 @@ void tools_init(char *ver, display_context_t d, int showFPS)
 
 	if(displayFPS)
 		new_timer(TIMER_TICKS(1000000), TF_CONTINUOUS, fpsUpdater);
-}
-
-void tools_frameUpdate()
-{
-	
-	tools_print("FRAME UPDATE!");
-	
 }
 
 void tools_update()
@@ -138,6 +134,12 @@ void tools_show(display_context_t display, int debug, int consoleScroll)
 		graphics_set_color(GFX_COLOR_RED, GFX_COLOR_BLACK);
 		graphics_draw_text(display, ZERO_X , 10 +ZERO_Y, framesDisplay);
 	}
+
+	if(displayGfxBytes)
+	{
+		graphics_draw_text(display, ZERO_X + 70 , 10 +ZERO_Y, bytesDisplay);
+	}
+
 	gfx_finish();
 	// Update Display
 	display_show(display);
@@ -151,18 +153,6 @@ void tools_print(char msg[])
 		debugMessages[currentConsolePrint] = malloc( (1 + strlen(msg)) * sizeof(char)); 
 		strcpy(debugMessages[currentConsolePrint], msg); 
 		currentConsolePrint++;
-	} else
-	{/*
-		for(int i = 1; i < numDebugMessages - 1; i++)
-		{
-			free(debugMessages[i - 1]);
-			debugMessages[i - 1] = malloc(sizeof(char) * 64);
-			strcpy(debugMessages[i - 1], debugMessages[i]);
-			//debugMessages[i-1] = debugMessages[i];
-		}
-		free(debugMessages[numDebugMessages - 1]);
-		debugMessages[numDebugMessages - 1] = malloc(sizeof(char)*64);
-		strcpy(debugMessages[numDebugMessages - 1], msg); */
 	}
 }
 
@@ -170,4 +160,19 @@ void fpsUpdater()
 {
 	sprintf(framesDisplay, "FPS: %d", frames);
 	frames = 0;
+}
+
+void tools_changeGfxBytes(int bytes)
+{
+	gfxBytes += bytes;
+	sprintf(bytesDisplay, "Mem: %lf\%%", (float)((float)(gfxBytes)/graphics_memory*100));
+}
+
+void tools_free_sprite(sprite_t *sprite)
+{
+	tools_changeGfxBytes(-sizeof(uint16_t) 
+								* (int) (sprite->width)
+								* (int) (sprite->height)
+								- sizeof(sprite_t));
+	free(sprite);
 }
