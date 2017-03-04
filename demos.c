@@ -531,6 +531,11 @@ int main(void)
 					graphics_draw_pixel_trans(disp, x, y, GFX_COLOR_DBLUE);
 			graphics_draw_text(disp, 140, 110, screenFillView);
 			if(keys.c[0].Z) scenario = -1;
+		} else if(scenario == 12)
+		{
+			keys = get_keys_pressed();
+			
+			if(keys.c[0].Z) scenario = -1;
 		} else
 		{
 			for(int i = 0; i < numItems; i++)
