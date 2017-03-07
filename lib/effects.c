@@ -66,7 +66,7 @@ void fx_sprite_fade(sprite_t* sprite, int offset, int merged)
 			char msg[39];
 			if(idx == 2000)
 			{
-				sprintf(msg, "before: %u,%u,%u,%u",  
+				snprintf(msg, 39, "before: %u,%u,%u,%u",  
 				(unsigned int) r, 
 				(unsigned int) g, 
 				(unsigned int) b, 
@@ -83,7 +83,7 @@ void fx_sprite_fade(sprite_t* sprite, int offset, int merged)
 			
 			if(idx == 2000)
 			{
-				sprintf(msg, "after: %u,%u,%u,%u",  (unsigned int)r, (unsigned int)g, (unsigned int)b, (unsigned int)a);
+				snprintf(msg, 39, "after: %u,%u,%u,%u",  (unsigned int)r, (unsigned int)g, (unsigned int)b, (unsigned int)a);
 				tools_print(msg);
 			}
 			

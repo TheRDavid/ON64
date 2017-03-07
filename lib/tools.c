@@ -11,6 +11,7 @@
 #include <grafix.h>
 #include <tools.h>
 #include <sound.h>
+#include <math.h>
 
 double start;
 int boxX, boxDir, boxWidth;
@@ -24,10 +25,15 @@ ushort frames = 0;
 char framesDisplay[30], bytesDisplay[30];
 int displayFPS, displayGfxBytes;
 int gfxBytes = 0;
-int graphics_memory = 1024 * 1024 * 3.5f; // 3.5 MB
+int graphics_memory = 1024 * 1024 * 2; // 2 MB
+int auto_scroll;
 
-void tools_init(char *ver, display_context_t d, int showFPS, int showByteAllocation)
+void tools_init(char *ver, display_context_t d, int showFPS, int showByteAllocation, int console_auto_scroll)
 {
+	auto_scroll = console_auto_scroll;
+	sprite_loading_queue = malloc(sizeof(sprite_queue));
+	sprite_loading_queue->append_index = 0;
+	sprite_loading_queue->load_index = 0;
 	displayGfxBytes = showByteAllocation;
 	displayFPS = showFPS;
 	consoleIndex = 0;
@@ -55,11 +61,12 @@ void tools_init(char *ver, display_context_t d, int showFPS, int showByteAllocat
     
 	boxColor = graphics_make_color(150,50,50,100);
 	char msg[32];
-	sprintf(msg, "v%s", ver);
+	snprintf(msg, 32, "v%s", ver);
 	tools_print(msg);
 
 	if(displayFPS)
 		new_timer(TIMER_TICKS(1000000), TF_CONTINUOUS, fpsUpdater);
+	new_timer(TIMER_TICKS(10000), TF_CONTINUOUS, sprite_queue_load_next);
 }
 
 void tools_update()
@@ -148,6 +155,7 @@ void tools_show(display_context_t display, int debug, int consoleScroll)
 
 void tools_print(char msg[])
 {
+	consoleIndex += currentConsolePrint > 3 ? auto_scroll : 0;
 	if(currentConsolePrint < numDebugMessages)
 	{
 		debugMessages[currentConsolePrint] = malloc( (1 + strlen(msg)) * sizeof(char)); 
@@ -158,21 +166,93 @@ void tools_print(char msg[])
 
 void fpsUpdater()
 {
-	sprintf(framesDisplay, "FPS: %d", frames);
+	snprintf(framesDisplay, 30, "FPS: %d", frames);
 	frames = 0;
 }
 
 void tools_changeGfxBytes(int bytes)
 {
 	gfxBytes += bytes;
-	sprintf(bytesDisplay, "Mem: %lf\%%", (float)((float)(gfxBytes)/graphics_memory*100));
+	snprintf(bytesDisplay, 30, "Mem: %lf\%%", (float)((float)(gfxBytes)/graphics_memory*100));
 }
 
 void tools_free_sprite(sprite_t *sprite)
 {
-	tools_changeGfxBytes(-sizeof(uint16_t) 
-								* (int) (sprite->width)
-								* (int) (sprite->height)
-								- sizeof(sprite_t));
+	if(sprite == NULL) return;
+	int s = -sizeof(uint16_t) 
+				* (int) (sprite->width)
+				* (int) (sprite->height)
+				- sizeof(sprite_t);
 	free(sprite);
+	tools_changeGfxBytes(s);
+}
+
+int tools_sprite_queue_has_next()
+{
+	return sprite_loading_queue->load_index != 0;
+}
+
+void tools_push_to_sprite_queue(char path[], int hslices, int vslices) // buggy !
+{
+	if(sprite_loading_queue->append_index == SPRITE_LOADING_QUEUE_MAX)
+	{
+		tools_print("sprite loading queue full!");
+		return;
+	}
+	sprite_loading_queue->hslices[sprite_loading_queue->append_index] = hslices;
+	sprite_loading_queue->vslices[sprite_loading_queue->append_index] = vslices;
+	snprintf(sprite_loading_queue->paths[sprite_loading_queue->append_index], 64, "%s", path);
+	
+	char msg[64];
+	snprintf(msg, 64, "pushing %s", sprite_loading_queue->paths[sprite_loading_queue->append_index]);
+	tools_print(msg);
+	
+	sprite_loading_queue->append_index++; // this mofo
+}
+
+void sprite_queue_load_next()
+{
+	if(sprite_loading_queue->load_index == SPRITE_LOADING_QUEUE_MAX || sprite_loading_queue->load_index >= sprite_loading_queue->append_index)
+	{
+		// tools_print("nothing to load!");
+		return;
+	}
+
+	if(gfxBytes >= graphics_memory)
+	{
+		// tools_print("waiting for memory to be freed");
+		return;
+	}
+
+	char msg[128];
+	snprintf(msg, 128, "loading %s", sprite_loading_queue->paths[sprite_loading_queue->load_index]);
+	tools_print(msg);
+
+	sprite_loading_queue->sprites[sprite_loading_queue->load_index] = gfx_load_sprite(sprite_loading_queue->paths[sprite_loading_queue->load_index]);
+	sprite_loading_queue->sprites[sprite_loading_queue->load_index]->hslices = sprite_loading_queue->hslices[sprite_loading_queue->load_index];
+	sprite_loading_queue->sprites[sprite_loading_queue->load_index]->vslices = sprite_loading_queue->vslices[sprite_loading_queue->load_index];
+	
+	sprite_loading_queue->load_index++;
+}
+
+sprite_t* tools_sprite_queue_pop()
+{
+	sprite_t* ret = sprite_loading_queue->sprites[0];
+
+	char msg[64];
+	snprintf(msg, 64,"pop %dx%d sprite", ret->width, ret->height);
+	tools_print(msg);
+
+	for(int i = 0 ; i < sprite_loading_queue->append_index - 1; i++)
+	{
+		sprite_loading_queue->sprites[i] = sprite_loading_queue->sprites[i + 1];
+		sprite_loading_queue->hslices[i] = sprite_loading_queue->hslices[i + 1];
+		sprite_loading_queue->vslices[i] = sprite_loading_queue->vslices[i + 1];
+		snprintf(sprite_loading_queue->paths[i], 64, sprite_loading_queue->paths[i + 1]);
+		sprite_loading_queue->sprites[i] = sprite_loading_queue->sprites[i + 1];
+	}
+
+	sprite_loading_queue->append_index--;
+	sprite_loading_queue->load_index--;
+	return ret;
 }

@@ -74,7 +74,7 @@ void gfx_finish();
 /**
  * 	return a pointer to a sprite that was loaded from a file called name
  */ 
-sprite_t* gfx_load_sprite(const char *const name);
+sprite_t* gfx_load_sprite(char* name);
 
 /**
   * Returns a deep copy of the original  sprite

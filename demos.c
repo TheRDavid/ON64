@@ -20,7 +20,7 @@ int main(void)
 	static display_context_t disp = 0; 
 	//char *soundFiles[5] =  {"rom://music.mod", "rom://pacman_intro.wav", "rom://pacman_x.wav", "rom://pacman_x_s.wav"};
 	//int SOUND_MUSIC = 0;//, SOUND_EFFECT = 1; //, SOUND_EDD_DOING = 2;
-	tools_init("2.4.3", disp, TRUE, TRUE);
+	tools_init("2.4.3", disp, TRUE, TRUE, FALSE);
 	//sound_init(soundFiles, 4, 4);
 	int numItems = 13;
 	sprite_t* tracer_sprite = gfx_sprite_scale(gfx_load_sprite("tracer.sprite"), BILINEAR, 0.5f, TRUE, FALSE);
@@ -54,7 +54,7 @@ int main(void)
 								{"Joystick"},
 								{"Distortion"},
 								{"Performance"},
-								{"Memory Stress"}  }; 
+								{"Pong"}  }; 
 								
 
 	int debug = 1;
@@ -64,13 +64,13 @@ int main(void)
 	int scenario = -1;
 	int cursorX = 100, cursorY = 100, cursorTextSpacing = 30;
 	degree = 0;
-	int numLines = 14, screenFill = 0;
-	char msgs[numLines][40];
+	int numLines = 12, screenFill = 0;
+	char msgs[numLines][120];
 	int jX = 0, jY = 0;
 
 	for(int i = 0; i < numLines; i++)
 	{
-		strcpy(msgs[i], "xxx");
+		snprintf(msgs[i], 120, "xxxx");
 	}
 	
 	int shapeSelect = 0;
@@ -150,8 +150,7 @@ int main(void)
 	triangle2.x2 = 180;
 	triangle2.y2 = 40;
 	triangle2.color = colors[colorSelectors[5]];
-	triangle2.fill = FALSE;
-	
+	triangle2.fill = FALSE;	
 
 	// GAME LOOP
 	while(1) 
@@ -282,7 +281,7 @@ int main(void)
 			
 			graphics_draw_text(disp, 10+ZERO_X , 190+ZERO_Y , "Use DPad (left / right) to rotate");
 			char degMessage[30];
-			sprintf(degMessage, "%d", degree);
+			snprintf(degMessage, 30, "%d", degree);
 			graphics_draw_text( disp, 10+ZERO_X, 160+ZERO_Y, degMessage);
 			if(keys.c[0].Z) scenario = -1;
 
@@ -389,8 +388,8 @@ int main(void)
 			
 			graphics_draw_text(disp, 96, ZERO_Y + 10, "Switch Shape with up/down\nSwitch Color with left/right");
 			char msg1[40], msg2[40];
-			sprintf(msg1, "Shape: %s", shapeNames[shapeSelect]);
-			sprintf(msg2, "Color: %s", colorNames[colorSelectors[shapeSelect]]);
+			snprintf(msg1, 40, "Shape: %s", shapeNames[shapeSelect]);
+			snprintf(msg2, 40, "Color: %s", colorNames[colorSelectors[shapeSelect]]);
 			graphics_draw_text(disp, 120, ZERO_Y + 80, msg1);
 			graphics_draw_text(disp, 120, ZERO_Y + 120, msg2);
 			
@@ -417,7 +416,7 @@ int main(void)
 			if(keys.c[0].left) cursorX--;
 			if(keys.c[0].right) cursorX++; 
 			char msg[24];
-			sprintf(msg, "%dx%d",cursorX, cursorY);
+			snprintf(msg, 24, "%dx%d",cursorX, cursorY);
 			if(keys.c[0].x < 0 || keys.c[0].y < 0)
 			{
 				consoleIndex++;
@@ -434,15 +433,15 @@ int main(void)
 			keys = get_keys_pressed();
 			for(int i = 1; i < numLines; i++)
 			{
-				 strcpy(msgs[i-1], msgs[i]);
+				snprintf(msgs[i-1], 40, msgs[i]);
 			}
 			jX = keys.c[0].x;
 			jY = keys.c[0].y;
 			++count;
-			sprintf(msgs[numLines - 1], "#%d :: \tx: %d - \ty: %d", ++count, jX, jY);
+			snprintf(msgs[numLines - 1], 120, "#%d :: \tx: %d - \ty: %d", ++count, jX, jY);
 			for(int i = 0; i < numLines; i++)
 			{
-				graphics_draw_text( disp, 10+ZERO_X, i * 20 + ZERO_Y, msgs[i]);
+				graphics_draw_text( disp, 10+ZERO_X, i * 15 + ZERO_Y, msgs[i]);
 			}
 			if(keys.c[0].Z) scenario = -1;
 		} else if(scenario == 10)
@@ -475,7 +474,7 @@ int main(void)
 				memcpy(tracer_sprite->data, tracer_sprite_O->data, sizeof(tracer_sprite_O->data));
 			} 
 			char msg1[30];
-			sprintf(msg1, "Before@50x50: %lu", tracer_sprite->data[50 + 50 * tracer_sprite->width]);
+			snprintf(msg1, 30, "Before@50x50: %lu", tracer_sprite->data[50 + 50 * tracer_sprite->width]);
 			
 			uint32_t deb = fx_sprite_4_point_transform(tracer_sprite_O, tracer_sprite,
 										distortCorners[0], distortCorners[1],
@@ -483,7 +482,7 @@ int main(void)
 										distortCorners[4], distortCorners[5],
 										distortCorners[6], distortCorners[7]);
 			char msg2[30];
-			sprintf(msg2, "deb@50x50: %lu", deb);
+			snprintf(msg2, 30, "deb@50x50: %lu", deb);
 			
 			// only change corners if within acceptable bounds
 			if(	distortCorners[selectedCorner] + x_change >= 0 
@@ -496,7 +495,7 @@ int main(void)
 
 			char msg3[30];
 			// bullshit !!
-			sprintf(msg3, "After@50x50: %lu", tracer_sprite->data[50 + 50 * tracer_sprite->width]);
+			snprintf(msg3, 30, "After@50x50: %lu", tracer_sprite->data[50 + 50 * tracer_sprite->width]);
 			graphics_draw_sprite(disp, imgX + ZERO_X, imgY + ZERO_Y, tracer_sprite);
 			graphics_draw_text(disp, 10 + ZERO_X, 110 + ZERO_Y, msg1);
 			graphics_draw_text(disp, 10 + ZERO_X, 135 + ZERO_Y, msg2);
@@ -525,7 +524,7 @@ int main(void)
 					screenFill -= 1;
 				}
 			}
-			sprintf(screenFillView, "%d%%", (int)((float)screenFill / 3.2f));
+			snprintf(screenFillView, 30, "%d%%", (int)((float)screenFill / 3.2f));
 			for(int x = 0; x < screenFill; x++)
 				for(int y = 0; y < 240; y++)
 					graphics_draw_pixel_trans(disp, x, y, GFX_COLOR_DBLUE);
@@ -534,7 +533,7 @@ int main(void)
 		} else if(scenario == 12)
 		{
 			keys = get_keys_pressed();
-			
+
 			if(keys.c[0].Z) scenario = -1;
 		} else
 		{

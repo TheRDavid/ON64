@@ -57,15 +57,16 @@ void gfx_finish()
 	hardwareUsed = 0;
 }
 
-sprite_t* gfx_load_sprite(const char *const name)
+sprite_t* gfx_load_sprite(char* name)
 {
 	int fp = dfs_open(name);
 	int newSize =  dfs_size( fp );
+	tools_changeGfxBytes(newSize);
 	sprite_t *newSprite = malloc( newSize );
 	dfs_read( newSprite, 1, newSize, fp );
 	newSprite->bitdepth = bitDepth;
-	tools_changeGfxBytes(newSize);
 	dfs_close( fp );
+
 	return newSprite;
 }
 
@@ -99,7 +100,7 @@ sprite_t* gfx_sprite_scale(sprite_t* sprite, gfx_interpolationMode mode, float f
 				* (int) (newHeight)
 				+ sizeof(sprite_t);
 	char ms[50];
-	sprintf(ms, "%d pixels",newWidth*newHeight - sprite->width*sprite->height-newWidth);
+	snprintf(ms, 50, "%d pixels",newWidth*newHeight - sprite->width*sprite->height-newWidth);
 	tools_print(ms);
 	sprite_t* newSprite = malloc  (size);
 	tools_changeGfxBytes(size);
@@ -449,7 +450,7 @@ void gfx_sprite_hflip(sprite_t *sprite)
 				uint16_t temp = data[index];
 				int otherIndex = sprite->height * sprite->width - indexByRow + i1 -(sprite->width-1) - 1;
 				char msg[120];
-				sprintf(msg, "%d<->%d", index, otherIndex);
+				snprintf(msg, 120, "%d<->%d", index, otherIndex);
 				//tools_print(msg);
 				data[index] = data[otherIndex];
 				data[otherIndex] = temp;
@@ -468,7 +469,7 @@ void gfx_sprite_hflip(sprite_t *sprite)
 				uint16_t temp = data[index];
 				int otherIndex = sprite->height * sprite->width - indexByRow + i1 -(sprite->width-1) - 1;
 				char msg[120];
-				sprintf(msg, "%d<->%d", index, otherIndex);
+				snprintf(msg, 120, "%d<->%d", index, otherIndex);
 				//tools_print(msg);
 				data[index] = data[otherIndex];
 				data[otherIndex] = temp;
@@ -643,9 +644,9 @@ void gfx_draw_merged_sprite_stride(display_context_t display, sprite_t* sprite, 
 		int tx = (offset % sprite->hslices) * twidth;									// 4 % 4 -> 0 * 320
 		int ty = (offset / sprite->hslices) * theight;									// 4 / 4 -> 1 * 131
 
-		char msg[35];
-		sprintf(msg, "ty:%d, y:%d", ty, y);
-		tools_print(msg);
+		/*char msg[35];
+		snprintf(msg, 35, "ty:%d, y:%d", ty, y);
+		tools_print(msg);*/
 
 		for( int yp = ty; yp < ty + theight; yp++) // loop over tile
 		{
@@ -672,9 +673,9 @@ void gfx_draw_merged_sprite_stride(display_context_t display, sprite_t* sprite, 
 		int tx = (offset % sprite->hslices) * twidth;
 		int ty = (offset / sprite->hslices) * theight;
 
-		char msg[35];
-		sprintf(msg, "ty:%d, y:%d", ty, y);
-		tools_print(msg);
+		/*char msg[35];
+		snprintf(msg, 35, "ty:%d, y:%d", ty, y);
+		tools_print(msg);*/
 
 		for(int yp = ty; yp < ty + theight; yp++) // loop over tile
 		{
