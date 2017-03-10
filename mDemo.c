@@ -27,17 +27,19 @@ int main(void)
 		
 	char baseName[42] = {"harryPotterMovie_anim_merged_320x131_9x2/"}; // length + 1 for terminator
 	char spriteName[64];
-	sprite_t* play = gfx_load_sprite("harryPotterMovie_anim_merged_320x131_9x2/0.sprite");
-	
-	play->hslices = 9;
-	play->vslices = 2;
-	
-	tools_push_to_sprite_queue("harryPotterMovie_anim_merged_320x131_9x2/1.sprite", 9, 2);
-
+    sprite_t* p0 = gfx_load_sprite("harryPotterMovie_anim_merged_320x131_9x2/0.sprite");
+    sprite_t* p1 = gfx_load_sprite("harryPotterMovie_anim_merged_320x131_9x2/0.sprite");
+    p0->hslices = 9;
+    p0->vslices = 2;
+    p1->hslices = 9;
+    p1->vslices = 2;
+    sprite_t **play_sprites[2] = {&p0,&p1};
+    int load = 1;
+    //tools_push_to_sprite_queue("harryPotterMovie_anim_merged_320x131_9x2/1.sprite", 9, 2, play_sprites[load]);
 
 	int frame = 1, maxFrame = 33, offset = 0, maxOffset = 35;
 	// GAME LOOP
-	while(1) 
+    while(1) 
 	{
 		/* Grab a render buffer */
 		while( !(disp = display_lock()) );
@@ -48,25 +50,22 @@ int main(void)
 
         if(offset == maxOffset)
         {
-            if(tools_sprite_queue_has_next())
+            offset = 0;
+            if(frame == maxFrame)
             {
-				offset = 0;
-				if(frame == maxFrame)
-				{
-					frame = 0;
-				} else frame++;
-				tools_free_sprite(play);
-				play = tools_sprite_queue_pop();
-				snprintf(spriteName, 64, "%s%d.sprite", baseName, frame);
-				tools_push_to_sprite_queue(spriteName, 9, 2);
-            } 
+                frame = 0;
+            } else frame++;
+            snprintf(spriteName, 64, "%s%d.sprite", baseName, frame);
+            tools_push_to_sprite_queue(spriteName, 9, 2, play_sprites[1 - load]);
+            load = 1 - load;
 
         } else offset++;
 		char degMessage[64];
-		snprintf(degMessage, 64, "of: %d, fr: %d, ap: %d, ld: %d", offset, frame, sprite_loading_queue->append_index, sprite_loading_queue->load_index);
+		snprintf(degMessage, 64, "of: %d, fr: %d, ap: %d", offset, frame, sprite_loading_queue->append_index);
 		graphics_draw_text( disp, ZERO_X, 160 + ZERO_Y, degMessage);
 
-       // if(play != NULL) gfx_draw_merged_sprite_stride(disp, play, 0, 0, offset);
+       // if(load == 1) gfx_draw_merged_sprite_stride(disp, p0, 0, 0, offset);
+       // else gfx_draw_merged_sprite_stride(disp, p1, 0, 0, offset);
 
 			
 		if(keys.c[0].B) debug = 1 - debug;

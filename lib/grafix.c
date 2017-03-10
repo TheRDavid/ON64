@@ -60,14 +60,30 @@ void gfx_finish()
 sprite_t* gfx_load_sprite(char* name)
 {
 	int fp = dfs_open(name);
-	int newSize =  dfs_size( fp );
+	if(fp < 0) return NULL;
+	int newSize =  dfs_size(fp);
 	tools_changeGfxBytes(newSize);
-	sprite_t *newSprite = malloc( newSize );
-	dfs_read( newSprite, 1, newSize, fp );
+	sprite_t *newSprite = malloc( newSize);
+	tools_print("allocated");
+	dfs_read( newSprite, 1, newSize, fp);
 	newSprite->bitdepth = bitDepth;
-	dfs_close( fp );
-
+	int fc = dfs_close(fp);
+	if(fc < 0) tools_print("could not close correctly");
 	return newSprite;
+}
+
+int gfx_load_sprite_into_buffer(char *name, sprite_t **buffer)
+{	
+	int fp = dfs_open(name);
+	if(fp < 0) return fp;
+	sprite_t* s = ((sprite_t*)(*buffer));
+	//int fr = dfs_read(s, 1, dfs_size(fp), fp);
+	//if(fr < 0) return fr;
+	//s->bitdepth = bitDepth;
+	tools_print("allocated2");
+	int fc = dfs_close(fp);
+	if(fc < 0) tools_print("could not close correctly 2");
+	return 0;
 }
 
 sprite_t* gfx_copy_sprite(sprite_t* original)

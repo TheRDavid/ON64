@@ -12,9 +12,8 @@
 typedef struct
 {
     char paths[SPRITE_LOADING_QUEUE_MAX][64];
-    sprite_t* sprites[SPRITE_LOADING_QUEUE_MAX];
+    sprite_t** sprites[SPRITE_LOADING_QUEUE_MAX];
     int append_index;
-    int load_index;
     int hslices[SPRITE_LOADING_QUEUE_MAX];
     int vslices[SPRITE_LOADING_QUEUE_MAX];
 } sprite_queue;
@@ -75,7 +74,7 @@ int tools_sprite_queue_has_next();
  * Append a request to the loading queue
  *
  */
-void tools_push_to_sprite_queue(char path[], int hslices, int vslices);
+void tools_push_to_sprite_queue(char path[], int hslices, int vslices, sprite_t** buffer);
 
 /**
  * Loads the next element in the request queue
@@ -87,6 +86,6 @@ void sprite_queue_load_next();
  * Returns the oldest element from the queue and removes it
  *
  */
-sprite_t* tools_sprite_queue_pop();
+void sprite_queue_shift();
 
 #endif

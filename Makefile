@@ -7,7 +7,7 @@ N64TOOL = $(ROOTDIR)/bin/n64tool
 HEADERNAME = header
 LINK_FLAGS = -L$(ROOTDIR)/lib -L$(ROOTDIR)/mips64-elf/lib -lmikmod -ldragon -lm -lc -ldragonsys -Tn64ld.x
 PROG_NAME = $(APP_NAME)
-CFLAGS = -std=gnu99 -march=vr4300 -mtune=vr4300 -O2 -Wall -Werror -I$(ROOTDIR)/include -Ilib
+CFLAGS = -std=gnu99 -march=vr4300 -mtune=vr4300 -O2 -Wall -I$(ROOTDIR)/include -Ilib
 ASFLAGS = -mtune=vr4300 -march=vr4300
 CC = $(GCCN64PREFIX)gcc
 AS = $(GCCN64PREFIX)as

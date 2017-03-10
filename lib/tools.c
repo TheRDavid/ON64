@@ -24,16 +24,15 @@ int maxCharsPerLine = 35; // Text output max (per line)
 ushort frames = 0;
 char framesDisplay[30], bytesDisplay[30];
 int displayFPS, displayGfxBytes;
-int gfxBytes = 0;
-int graphics_memory = 1024 * 1024 * 2; // 2 MB
 int auto_scroll;
+int gfxBytes = 0;
+int graphics_memory = 1024 * 1024 * 1.8f; // 1 MB
 
 void tools_init(char *ver, display_context_t d, int showFPS, int showByteAllocation, int console_auto_scroll)
 {
 	auto_scroll = console_auto_scroll;
 	sprite_loading_queue = malloc(sizeof(sprite_queue));
 	sprite_loading_queue->append_index = 0;
-	sprite_loading_queue->load_index = 0;
 	displayGfxBytes = showByteAllocation;
 	displayFPS = showFPS;
 	consoleIndex = 0;
@@ -66,7 +65,7 @@ void tools_init(char *ver, display_context_t d, int showFPS, int showByteAllocat
 
 	if(displayFPS)
 		new_timer(TIMER_TICKS(1000000), TF_CONTINUOUS, fpsUpdater);
-	new_timer(TIMER_TICKS(10000), TF_CONTINUOUS, sprite_queue_load_next);
+	new_timer(TIMER_TICKS(100000), TF_CONTINUOUS, sprite_queue_load_next);
 }
 
 void tools_update()
@@ -173,7 +172,8 @@ void fpsUpdater()
 void tools_changeGfxBytes(int bytes)
 {
 	gfxBytes += bytes;
-	snprintf(bytesDisplay, 30, "Mem: %lf\%%", (float)((float)(gfxBytes)/graphics_memory*100));
+	//snprintf(bytesDisplay, 30, "Mem: %lf\%%", (float)((float)(gfxBytes)/graphics_memory*100));
+	snprintf(bytesDisplay, 30, "Mem: %d/%d", gfxBytes, graphics_memory);
 }
 
 void tools_free_sprite(sprite_t *sprite)
@@ -184,65 +184,77 @@ void tools_free_sprite(sprite_t *sprite)
 				* (int) (sprite->height)
 				- sizeof(sprite_t);
 	free(sprite);
+	tools_print("freed");
 	tools_changeGfxBytes(s);
 }
 
-int tools_sprite_queue_has_next()
-{
-	return sprite_loading_queue->load_index != 0;
-}
-
-void tools_push_to_sprite_queue(char path[], int hslices, int vslices) // buggy !
+void tools_push_to_sprite_queue(char path[], int hslices, int vslices, sprite_t** buffer) // buggy !
 {
 	if(sprite_loading_queue->append_index == SPRITE_LOADING_QUEUE_MAX)
 	{
 		tools_print("sprite loading queue full!");
 		return;
 	}
+	sprite_loading_queue->sprites[sprite_loading_queue->append_index] = buffer;
 	sprite_loading_queue->hslices[sprite_loading_queue->append_index] = hslices;
 	sprite_loading_queue->vslices[sprite_loading_queue->append_index] = vslices;
 	snprintf(sprite_loading_queue->paths[sprite_loading_queue->append_index], 64, "%s", path);
 	
-	char msg[64];
-	snprintf(msg, 64, "pushing %s", sprite_loading_queue->paths[sprite_loading_queue->append_index]);
+	char msg[64];	
+	//snprintf(msg, 64, "pushing %s", sprite_loading_queue->paths[sprite_loading_queue->append_index]);
+	snprintf(msg, 64, "pushing");
 	tools_print(msg);
 	
-	sprite_loading_queue->append_index++; // this mofo
+	sprite_loading_queue->append_index++;
 }
 
 void sprite_queue_load_next()
 {
-	if(sprite_loading_queue->load_index == SPRITE_LOADING_QUEUE_MAX || sprite_loading_queue->load_index >= sprite_loading_queue->append_index)
+	if(sprite_loading_queue->append_index == 0)
 	{
 		// tools_print("nothing to load!");
 		return;
 	}
 
-	if(gfxBytes >= graphics_memory)
-	{
-		// tools_print("waiting for memory to be freed");
-		return;
-	}
-
 	char msg[128];
-	snprintf(msg, 128, "loading %s", sprite_loading_queue->paths[sprite_loading_queue->load_index]);
+	//snprintf(msg, 128, "loading %s", sprite_loading_queue->paths[0]);
+	snprintf(msg, 128, "loading");
 	tools_print(msg);
 
-	sprite_loading_queue->sprites[sprite_loading_queue->load_index] = gfx_load_sprite(sprite_loading_queue->paths[sprite_loading_queue->load_index]);
-	sprite_loading_queue->sprites[sprite_loading_queue->load_index]->hslices = sprite_loading_queue->hslices[sprite_loading_queue->load_index];
-	sprite_loading_queue->sprites[sprite_loading_queue->load_index]->vslices = sprite_loading_queue->vslices[sprite_loading_queue->load_index];
+	int success = gfx_load_sprite_into_buffer(sprite_loading_queue->paths[0], 
+						sprite_loading_queue->sprites[0]);
+
+	switch(success) {
+
+	case -1  :
+		tools_print("loading: Invalid Input");
+		break;
+		
+	case -2  :
+		tools_print("loading: File not found");
+		break; 
+
+	case -3  :
+		tools_print("loading: Bad filesystem");
+		break;
+
+	case -4  :
+		tools_print("loading: No memory for operation");
+		break; 
+
+	case -5  :
+		tools_print("loading: Invalid file handle");
+		break; 
 	
-	sprite_loading_queue->load_index++;
+	default : 
+		((sprite_t*)(sprite_loading_queue->sprites[0]))->hslices = sprite_loading_queue->hslices[0];
+		((sprite_t*)(sprite_loading_queue->sprites[0]))->vslices = sprite_loading_queue->vslices[0];
+		sprite_queue_shift();
+	}
 }
 
-sprite_t* tools_sprite_queue_pop()
+void sprite_queue_shift()
 {
-	sprite_t* ret = sprite_loading_queue->sprites[0];
-
-	char msg[64];
-	snprintf(msg, 64,"pop %dx%d sprite", ret->width, ret->height);
-	tools_print(msg);
-
 	for(int i = 0 ; i < sprite_loading_queue->append_index - 1; i++)
 	{
 		sprite_loading_queue->sprites[i] = sprite_loading_queue->sprites[i + 1];
@@ -253,6 +265,4 @@ sprite_t* tools_sprite_queue_pop()
 	}
 
 	sprite_loading_queue->append_index--;
-	sprite_loading_queue->load_index--;
-	return ret;
 }
