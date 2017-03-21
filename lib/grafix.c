@@ -77,9 +77,9 @@ int gfx_load_sprite_into_buffer(char *name, sprite_t **buffer)
 	int fp = dfs_open(name);
 	if(fp < 0) return fp;
 	sprite_t* s = ((sprite_t*)(*buffer));
-	//int fr = dfs_read(s, 1, dfs_size(fp), fp);
-	//if(fr < 0) return fr;
-	//s->bitdepth = bitDepth;
+	int fr = dfs_read(s, 1, dfs_size(fp), fp);
+	if(fr < 0) return fr;
+	s->bitdepth = bitDepth;
 	tools_print("allocated2");
 	int fc = dfs_close(fp);
 	if(fc < 0) tools_print("could not close correctly 2");
@@ -494,7 +494,7 @@ void gfx_sprite_hflip(sprite_t *sprite)
 	}
 }
 
-void gfx_draw_circle(display_context_t display, uint8_t x0, uint8_t y0, uint8_t radius, uint16_t color, int8_t fill)
+void gfx_draw_circle(display_context_t display, uint16_t x0, uint16_t y0, uint16_t radius, uint16_t color, int8_t fill)
 {
 	int x = radius;
     int y = 0;
@@ -541,7 +541,7 @@ void gfx_draw_circle(display_context_t display, uint8_t x0, uint8_t y0, uint8_t 
 	}
 }
 
-void gfx_draw_rectangle(display_context_t display, uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint16_t color, int8_t fill)
+void gfx_draw_rectangle(display_context_t display, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color, int8_t fill)
 {
 	if(fill)
 	{
@@ -556,9 +556,9 @@ void gfx_draw_rectangle(display_context_t display, uint8_t x, uint8_t y, uint8_t
 	}
 }
 
-void gfx_draw_triangle(	display_context_t disp, uint8_t x_0, uint8_t y_0,
-						uint8_t x_1, uint8_t y_1,
-						uint8_t x_2, uint8_t y_2, 
+void gfx_draw_triangle(	display_context_t disp, uint16_t x_0, uint16_t y_0,
+						uint16_t x_1, uint16_t y_1,
+						uint16_t x_2, uint16_t y_2, 
 						uint16_t color, int8_t fill)
 {
 	if(fill)
@@ -646,7 +646,7 @@ void gfx_draw_triangle(	display_context_t disp, uint8_t x_0, uint8_t y_0,
 	}
 }
 
-void gfx_draw_merged_sprite_stride(display_context_t display, sprite_t* sprite, uint8_t x, uint8_t y, uint8_t offset) // offset = 4
+void gfx_draw_merged_sprite_stride(display_context_t display, sprite_t* sprite, uint16_t x, uint16_t y, uint16_t offset) // offset = 4
 {
 	int twidth = sprite->width / sprite->hslices; 										// 320
 	int theight = sprite->height / sprite->vslices; 									// 131
@@ -714,7 +714,7 @@ void gfx_draw_merged_sprite_stride(display_context_t display, sprite_t* sprite, 
 	}
 }
 
-void gfx_draw_merged_sprite(display_context_t display, sprite_t* sprite, uint8_t x, uint8_t y, uint8_t layer)
+void gfx_draw_merged_sprite(display_context_t display, sprite_t* sprite, uint16_t x, uint16_t y, uint8_t layer)
 {
 	uint16_t *data = (uint16_t *) sprite->data;
 	if(layer == UPPER_LAYER)

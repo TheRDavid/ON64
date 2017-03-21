@@ -26,7 +26,7 @@ char framesDisplay[30], bytesDisplay[30];
 int displayFPS, displayGfxBytes;
 int auto_scroll;
 int gfxBytes = 0;
-int graphics_memory = 1024 * 1024 * 1.8f; // 1 MB
+int graphics_memory = 1024 * 1024 * 3.5f; // 3.5 MB
 
 void tools_init(char *ver, display_context_t d, int showFPS, int showByteAllocation, int console_auto_scroll)
 {
@@ -65,7 +65,7 @@ void tools_init(char *ver, display_context_t d, int showFPS, int showByteAllocat
 
 	if(displayFPS)
 		new_timer(TIMER_TICKS(1000000), TF_CONTINUOUS, fpsUpdater);
-	new_timer(TIMER_TICKS(100000), TF_CONTINUOUS, sprite_queue_load_next);
+	new_timer(TIMER_TICKS(1000000), TF_CONTINUOUS, sprite_queue_load_next);
 }
 
 void tools_update()
@@ -218,7 +218,7 @@ void sprite_queue_load_next()
 
 	char msg[128];
 	//snprintf(msg, 128, "loading %s", sprite_loading_queue->paths[0]);
-	snprintf(msg, 128, "loading");
+	snprintf(msg, 128, "loading %d", sprite_loading_queue->append_index);
 	tools_print(msg);
 
 	int success = gfx_load_sprite_into_buffer(sprite_loading_queue->paths[0], 
@@ -226,30 +226,31 @@ void sprite_queue_load_next()
 
 	switch(success) {
 
-	case -1  :
-		tools_print("loading: Invalid Input");
-		break;
+		case -1  :
+			tools_print("loading: Invalid Input");
+			break;
+			
+		case -2  :
+			tools_print("loading: File not found");
+			break; 
+
+		case -3  :
+			tools_print("loading: Bad filesystem");
+			break;
+
+		case -4  :
+			tools_print("loading: No memory for operation");
+			break; 
+
+		case -5  :
+			tools_print("loading: Invalid file handle");
+			break; 
 		
-	case -2  :
-		tools_print("loading: File not found");
-		break; 
-
-	case -3  :
-		tools_print("loading: Bad filesystem");
-		break;
-
-	case -4  :
-		tools_print("loading: No memory for operation");
-		break; 
-
-	case -5  :
-		tools_print("loading: Invalid file handle");
-		break; 
-	
-	default : 
-		((sprite_t*)(sprite_loading_queue->sprites[0]))->hslices = sprite_loading_queue->hslices[0];
-		((sprite_t*)(sprite_loading_queue->sprites[0]))->vslices = sprite_loading_queue->vslices[0];
-		sprite_queue_shift();
+		default : 
+			((sprite_t*)(*sprite_loading_queue->sprites[0]))->hslices = sprite_loading_queue->hslices[0];
+			((sprite_t*)(*sprite_loading_queue->sprites[0]))->vslices = sprite_loading_queue->vslices[0];
+			sprite_queue_shift();
+			break;
 	}
 }
 

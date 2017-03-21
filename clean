@@ -1,5 +1,5 @@
 clear
-rm -rf *.v64
+rm -rf .v64
 make APP_NAME=$1
 rm -rf *.elf *.o *.bin *.dfs
 cd lib

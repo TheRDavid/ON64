@@ -7,12 +7,12 @@
 #define __GRAFIX_H
 
 int bitDepth;
-#define ZERO_X 13
+#define ZERO_X 9
 #define ZERO_Y 0
-#define MAX_X 305
+#define MAX_X 308
 #define MAX_Y 236
-#define RES_X MAX_X - ZERO_X
-#define RES_Y MAX_Y - ZERO_Y
+#define RES_X 299
+#define RES_Y 236
 #define UPPER_LAYER 0
 #define LOWER_LAYER 1
 
@@ -32,33 +32,33 @@ typedef enum
 
 typedef struct
 {
-	uint8_t x;
-	uint8_t y;
-	uint8_t width;
-	uint8_t height;
+	uint16_t x;
+	uint16_t y;
+	uint16_t width;
+	uint16_t height;
 	uint16_t color;
-	uint8_t fill;
+	uint16_t fill;
 } gfx_shape_rectangle;
 
 typedef struct
 {
-	uint8_t x;
-	uint8_t y;
-	uint8_t radius;
+	uint16_t x;
+	uint16_t y;
+	uint16_t radius;
 	uint16_t color;
-	uint8_t fill;
+	uint16_t fill;
 } gfx_shape_circle;
 
 typedef struct
 {
-	uint8_t x0;
-	uint8_t y0;
-	uint8_t x1;
-	uint8_t y1;
-	uint8_t x2;
-	uint8_t y2;
+	uint16_t x0;
+	uint16_t y0;
+	uint16_t x1;
+	uint16_t y1;
+	uint16_t x2;
+	uint16_t y2;
 	uint16_t color;
-	uint8_t fill;
+	uint16_t fill;
 } gfx_shape_triangle;
 
 /**
@@ -122,32 +122,32 @@ void gfx_sprite_hflip(sprite_t *sprite);
 /**
  * Using Bresenham's circle algorithm
  */ 
-void gfx_draw_circle(display_context_t display, uint8_t x, uint8_t y, uint8_t radius, uint16_t color, int8_t fill);
+void gfx_draw_circle(display_context_t display, uint16_t x, uint16_t y, uint16_t radius, uint16_t color, int8_t fill);
 
 /**
  * If fill = 0: Draw Outline
  * Else use graphics_draw_box
  */ 
-void gfx_draw_rectangle(display_context_t display, uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint16_t color, int8_t fill);
+void gfx_draw_rectangle(display_context_t display, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color, int8_t fill);
 
 /**
  * Just draw a damn triangle
  */ 
 void gfx_draw_triangle(	display_context_t display, 
-						uint8_t x0, uint8_t y0,
-						uint8_t x1, uint8_t y1,
-						uint8_t x2, uint8_t y2, 
+						uint16_t x0, uint16_t y0,
+						uint16_t x1, uint16_t y1,
+						uint16_t x2, uint16_t y2, 
 						uint16_t color, int8_t fill);
 
 /**
  * Draw part of a spritemap. Use either the upper or lower layer, allowing twice the number of tiles
  */ 
-void gfx_draw_merged_sprite_stride(display_context_t display, sprite_t* sprite, uint8_t x, uint8_t y, uint8_t offset);
+void gfx_draw_merged_sprite_stride(display_context_t display, sprite_t* sprite, uint16_t x, uint16_t y, uint16_t offset);
 
 /**
  * Draw either the upper or lower layer of a merged sprite
  */ 
- void gfx_draw_merged_sprite(display_context_t display, sprite_t* sprite, uint8_t x, uint8_t y, uint8_t layer);
+ void gfx_draw_merged_sprite(display_context_t display, sprite_t* sprite, uint16_t x, uint16_t y, uint8_t layer);
 
 /**
  * Draw Textures faster.
