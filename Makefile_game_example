@@ -32,13 +32,17 @@ $(PROG_NAME).v64: $(PROG_NAME).elf spritemap.dfs
 	$(N64TOOL) -b -l 2M -t "application" -h $(HEADERPATH)/$(HEADERNAME) -o $(PROG_NAME).v64 $(PROG_NAME).bin -s 1M spritemap.dfs
 	$(CHKSUM64PATH) $(PROG_NAME).v64
 
-# after first line: all .h and .o
-# after second: all .o
+# first: all .h and .o
+# second: all .o
 # remember to break lines with ' \'!
 $(PROG_NAME).elf : $(PROG_NAME).o lib/grafix.o lib/grafix.h lib/sound.h lib/sound.o lib/game.h lib/game.o lib/effects.o lib/effects.h  lib/sound.h  lib/tools.o lib/tools.h \
-
+ponglib/main_game.o ponglib/main_game.h \
+ponglib/main_menu.o ponglib/main_menu.h \
+ponglib/pong_game.o ponglib/pong_game.h 
 	$(LD) -o $(PROG_NAME).elf $(PROG_NAME).o lib/effects.o lib/sound.o lib/grafix.o lib/game.o lib/tools.o \
-
+ponglib/main_game.o \
+ponglib/main_menu.o \
+ponglib/pong_game.o \
 $(LINK_FLAGS)
 copy: $(PROG_NAME).v64
 	cp $(PROG_NAME).v64 ~/public_html/

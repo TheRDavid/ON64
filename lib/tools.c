@@ -30,6 +30,7 @@ int graphics_memory = 1024 * 1024 * 3.5f; // 3.5 MB
 
 void tools_init(char *ver, display_context_t d, int showFPS, int showByteAllocation, int console_auto_scroll)
 {
+    srand ( time(NULL) );
 	auto_scroll = console_auto_scroll;
 	sprite_loading_queue = malloc(sizeof(sprite_queue));
 	sprite_loading_queue->append_index = 0;

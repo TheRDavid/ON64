@@ -1,5 +1,5 @@
 /**
- * @file grafix.h
+ * @file effects.h
  * @brief 2D Graphics extention
  * @ingroup graphics
  */
