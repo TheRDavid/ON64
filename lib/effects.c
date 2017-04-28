@@ -116,13 +116,12 @@ void fx_sprite_fade_alpha(sprite_t* sprite, int alphaOffset)
 	}
 }
 
-uint16_t fx_sprite_4_point_transform(sprite_t* source, sprite_t* dest,
+void fx_sprite_4_point_transform(sprite_t* source, sprite_t* dest,
 										int ax, int ay,
 										int bx, int by,
 										int cx, int cy,
 										int dx, int dy)
 {
-	uint16_t deb = 56;
 	uint16_t *oldData = (uint16_t *) source->data;
 	
 	int width = source->width;
@@ -151,9 +150,6 @@ uint16_t fx_sprite_4_point_transform(sprite_t* source, sprite_t* dest,
 
 			if(x_new >= 0 && x_new < width && y_new >= 0 && y_new < height)
 				newData[y_new * width + x_new] = oldData[y * width + x];
-			if(x_new == 50 && y_new == 50)
-				deb = oldData[y * width + x];
 		}
 	}
-	return deb;
 }

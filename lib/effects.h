@@ -31,7 +31,7 @@ void fx_sprite_fade_alpha(sprite_t* sprite, int alphaOffset);
  * 
  * updates dest, no changes will be applied to source
  */ 
-uint16_t fx_sprite_4_point_transform(sprite_t* source, sprite_t* dest,
+void fx_sprite_4_point_transform(sprite_t* source, sprite_t* dest,
 										int ax, int ay,
 										int bx, int by,
 										int cx, int cy,

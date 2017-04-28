@@ -93,6 +93,7 @@ sprite_t* gfx_copy_sprite(sprite_t* original);
  * returns the new sprite (since it has a new array)
  */ 
 sprite_t* gfx_sprite_scale(sprite_t* sprite, gfx_interpolationMode mode, float factor, int merged, int freeOriginal);
+void gfx_sprite_scale_2(sprite_t* source, sprite_t* dest, gfx_interpolationMode mode, float factor, int merged, int freeOriginal);
 
 /**
  * Rotates by degree
@@ -100,6 +101,7 @@ sprite_t* gfx_sprite_scale(sprite_t* sprite, gfx_interpolationMode mode, float f
  * returns the new sprite (since the array itself was transformed)
  */ 
 sprite_t* gfx_sprite_rotate(sprite_t* sprite, gfx_interpolationMode mode, int deg, int freeOriginal);
+void gfx_sprite_rotate_2(sprite_t* source, sprite_t* dest, gfx_interpolationMode mode, int deg, int freeOriginal);
 
 /**
  *  Flips the given sprite vertically

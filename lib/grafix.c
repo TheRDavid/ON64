@@ -107,26 +107,11 @@ sprite_t* gfx_copy_sprite(sprite_t* original)
 	return newSprite;
 }
 
-sprite_t* gfx_sprite_scale(sprite_t* sprite, gfx_interpolationMode mode, float factor, int merged, int freeOriginal)
-{	
-	uint16_t newWidth = (uint16_t) round(sprite->width * factor);
-	uint16_t newHeight = (uint16_t) round(sprite->height * factor);
-	int size = sizeof(uint16_t) 
-				* (int) (newWidth)
-				* (int) (newHeight)
-				+ sizeof(sprite_t);
-	char ms[50];
-	snprintf(ms, 50, "%d pixels",newWidth*newHeight - sprite->width*sprite->height-newWidth);
-	tools_print(ms);
-	sprite_t* newSprite = malloc  (size);
-	tools_changeGfxBytes(size);
-	newSprite->width = newWidth; 
-	newSprite->height = newHeight;
-	newSprite->bitdepth = sprite->bitdepth;
-	newSprite->hslices = sprite->hslices;
-	newSprite->vslices = sprite->vslices;
-	uint16_t *newData = (uint16_t *) newSprite->data;
-	uint16_t *oldData = (uint16_t *) sprite->data;
+void gfx_sprite_scale_2(sprite_t* source, sprite_t* dest, gfx_interpolationMode mode, float factor, int merged, int freeOriginal)
+{
+	uint16_t *newData = (uint16_t *) dest->data;
+	uint16_t *oldData = (uint16_t *) source->data;
+	int newHeight = dest->height, newWidth = dest->width;
 	switch(mode)
 	{
 		case NEAREST_NEIGHBOUR:
@@ -135,7 +120,7 @@ sprite_t* gfx_sprite_scale(sprite_t* sprite, gfx_interpolationMode mode, float f
 			{
 				int indexByRow = newRow * newWidth;
 				int oldRow = round(newRow / factor);
-				int oldIndexByRow = oldRow * sprite->width;
+				int oldIndexByRow = oldRow * source->width;
 				for(int newCol = 0; newCol < newWidth; newCol++)
 				{
 					int newIndex = indexByRow + newCol;
@@ -143,8 +128,8 @@ sprite_t* gfx_sprite_scale(sprite_t* sprite, gfx_interpolationMode mode, float f
 					int oldIndex = oldIndexByRow + oldCol;
 					
 					// Check for Border (top and bottom)
-					oldIndex = oldIndex < 0 ? oldIndex + sprite->width : oldIndex;
-					oldIndex = oldIndex > sprite->width * sprite->height - 1 ? oldIndex - sprite->width : oldIndex;
+					oldIndex = oldIndex < 0 ? oldIndex + source->width : oldIndex;
+					oldIndex = oldIndex > source->width * source->height - 1 ? oldIndex - source->width : oldIndex;
 					
 					newData[newIndex] = oldData[oldIndex];
 				}
@@ -171,13 +156,13 @@ sprite_t* gfx_sprite_scale(sprite_t* sprite, gfx_interpolationMode mode, float f
 					double rightShare = fmod(oldCol, 1);
 					double leftShare = (1 - rightShare);
 					
-					int ulIndex = upperRow * sprite->width + leftCol;
-					int urIndex = upperRow * sprite->width + rightCol;
-					int llIndex = lowerRow * sprite->width + leftCol;
-					int lrIndex = lowerRow * sprite->width + rightCol;
+					int ulIndex = upperRow * source->width + leftCol;
+					int urIndex = upperRow * source->width + rightCol;
+					int llIndex = lowerRow * source->width + leftCol;
+					int lrIndex = lowerRow * source->width + rightCol;
 					
 					// Check for Border (left and right)
-					if(ulIndex / sprite->width != urIndex / sprite->width)
+					if(ulIndex / source->width != urIndex / source->width)
 					{
 						if(newIndex > newWidth / 2) // right border
 						{
@@ -192,8 +177,8 @@ sprite_t* gfx_sprite_scale(sprite_t* sprite, gfx_interpolationMode mode, float f
 					// Check for Border (top and bottom)
 					ulIndex = ulIndex >= 0 ? ulIndex : llIndex;
 					urIndex = urIndex >= 0 ? urIndex : lrIndex;
-					llIndex = llIndex < sprite->width * sprite->height ? llIndex : ulIndex;
-					lrIndex = lrIndex < sprite->width * sprite->height ? lrIndex : urIndex;
+					llIndex = llIndex < source->width * source->height ? llIndex : ulIndex;
+					lrIndex = lrIndex < source->width * source->height ? lrIndex : urIndex;
 
 
 					// MIXDEMCOLORS
@@ -300,8 +285,8 @@ sprite_t* gfx_sprite_scale(sprite_t* sprite, gfx_interpolationMode mode, float f
 						
 						uint8_t a4 = (oldData[ulIndex + 1]) << 7;
 						uint8_t a5 = (oldData[llIndex + 1]) << 7;
-						uint8_t a6 = (oldData[ulIndex + sprite->width]) << 7;
-						uint8_t a7 = (oldData[urIndex + sprite->width]) << 7;
+						uint8_t a6 = (oldData[ulIndex + source->width]) << 7;
+						uint8_t a7 = (oldData[urIndex + source->width]) << 7;
 						
 						color_t colorUp;
 						colorUp.r = (double) color0.r * leftShare + (double) color1.r * rightShare;
@@ -339,60 +324,69 @@ sprite_t* gfx_sprite_scale(sprite_t* sprite, gfx_interpolationMode mode, float f
 		
 		default: break;
 	}
+
 	if(freeOriginal)
 	{ 
-		tools_free_sprite(sprite);
+		tools_free_sprite(source);
 	}
+}
+
+sprite_t* gfx_sprite_scale(sprite_t* sprite, gfx_interpolationMode mode, float factor, int merged, int freeOriginal)
+{	
+	uint16_t newWidth = (uint16_t) round(sprite->width * factor);
+	uint16_t newHeight = (uint16_t) round(sprite->height * factor);
+	int size = sizeof(uint16_t) 
+				* (int) (newWidth)
+				* (int) (newHeight)
+				+ sizeof(sprite_t);
+	char ms[50];
+	snprintf(ms, 50, "%d pixels",newWidth*newHeight - sprite->width*sprite->height-newWidth);
+	tools_print(ms);
+	sprite_t* newSprite = malloc  (size);
+	tools_changeGfxBytes(size);
+	newSprite->width = newWidth; 
+	newSprite->height = newHeight;
+	newSprite->bitdepth = sprite->bitdepth;
+	newSprite->hslices = sprite->hslices;
+	newSprite->vslices = sprite->vslices;
+
+	gfx_sprite_scale_2(sprite, newSprite, mode, factor, merged, freeOriginal);
+
 	return newSprite;
 }
 
-sprite_t* gfx_sprite_rotate(sprite_t* sprite, gfx_interpolationMode mode, int deg, int freeOriginal)
+void gfx_sprite_rotate_2(sprite_t* source, sprite_t* dest, gfx_interpolationMode mode, int deg, int freeOriginal)
 {
+
 	while(deg < 0) deg += 360;
 	deg%=360;
 	double sDeg = preSin[deg], cDeg = preCos[deg]; // gonna need those
-			
-	uint16_t *oldData = (uint16_t *)sprite->data;
-	
-	sprite_t* newSprite = malloc(sizeof(sprite_t) + sizeof(uint16_t) 
-							* (int) (sprite->width)
-							* (int) (sprite->height));
-	
-	newSprite->bitdepth = sprite->bitdepth;
-	newSprite->width = sprite->width;
-	newSprite->height = sprite->height;
-	newSprite->hslices = sprite->hslices;
-	newSprite->vslices = sprite->vslices;
-	
-	int size = sizeof(sprite_t) + sizeof(uint16_t) * sprite->width * sprite->height;
-	tools_changeGfxBytes(size);
 
-	int widthDivBy2 = sprite->width / 2;
-	int heightDivBy2 = sprite->height / 2;
+	int widthDivBy2 = source->width / 2;
+	int heightDivBy2 = source->height / 2;
 	
+	uint16_t *oldData = (uint16_t *) source->data;
+	uint16_t *newData = (uint16_t *) dest->data;
 	
-	uint16_t *newData = (uint16_t *)newSprite->data;
-	
-
 	switch(mode)
 	{
 		case NEAREST_NEIGHBOUR:
 	
-			for(int row = 0; row < sprite->height; row++) // for every row in the picture ...
+			for(int row = 0; row < source->height; row++) // for every row in the picture ...
 			{
-				for(int col = 0; col < sprite->width; col++) // ... and every col in each row ...
+				for(int col = 0; col < source->width; col++) // ... and every col in each row ...
 				{
 					int xt = col - widthDivBy2, yt = row - heightDivBy2;
 					
 					int xn = (int) round(xt * cDeg - yt * sDeg) + widthDivBy2; // calculate the new COORDINATES
 					int yn = (int) round(xt * sDeg + yt * cDeg) + heightDivBy2;
 					
-					int spriteIndex = yn * sprite->width + xn;
-					int newIdx = row * sprite->width + col;
+					int spriteIndex = yn * source->width + xn;
+					int newIdx = row * source->width + col;
 					int dx = abs(widthDivBy2 - xn);
 					int dy = abs(heightDivBy2 - yn);
 					int distance = sqrt(dx * dx + dy * dy);
-					if(spriteIndex >= 0 && spriteIndex < sprite->width * sprite->height)	
+					if(spriteIndex >= 0 && spriteIndex < source->width * source->height)	
 						newData[newIdx] = oldData[spriteIndex];		
 					// check if distance to center is bigger than radius
 					if(distance > widthDivBy2 || distance > heightDivBy2)
@@ -409,8 +403,27 @@ sprite_t* gfx_sprite_rotate(sprite_t* sprite, gfx_interpolationMode mode, int de
 	
 	if(freeOriginal)
 	{ 
-		tools_free_sprite(sprite);
+		tools_free_sprite(source);
 	}
+}
+
+sprite_t* gfx_sprite_rotate(sprite_t* sprite, gfx_interpolationMode mode, int deg, int freeOriginal)
+{				
+	sprite_t* newSprite = malloc(sizeof(sprite_t) + sizeof(uint16_t) 
+							* (int) (sprite->width)
+							* (int) (sprite->height));
+	
+	newSprite->bitdepth = sprite->bitdepth;
+	newSprite->width = sprite->width;
+	newSprite->height = sprite->height;
+	newSprite->hslices = sprite->hslices;
+	newSprite->vslices = sprite->vslices;
+	
+	int size = sizeof(sprite_t) + sizeof(uint16_t) * sprite->width * sprite->height;
+	tools_changeGfxBytes(size);
+
+	gfx_sprite_rotate_2(sprite, newSprite, mode, deg, freeOriginal);
+
 	return newSprite;
 }
 

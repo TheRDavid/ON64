@@ -35,10 +35,8 @@ $(PROG_NAME).v64: $(PROG_NAME).elf spritemap.dfs
 # after first line: all .h and .o
 # after second: all .o
 # remember to break lines with ' \'!
-$(PROG_NAME).elf : $(PROG_NAME).o lib/grafix.o lib/grafix.h lib/sound.h lib/sound.o lib/game.h lib/game.o lib/effects.o lib/effects.h  lib/sound.h  lib/tools.o lib/tools.h \
-
+$(PROG_NAME).elf : $(PROG_NAME).o lib/grafix.o lib/grafix.h lib/sound.h lib/sound.o lib/game.h lib/game.o lib/effects.o lib/effects.h  lib/sound.h  lib/tools.o lib/tools.h
 	$(LD) -o $(PROG_NAME).elf $(PROG_NAME).o lib/effects.o lib/sound.o lib/grafix.o lib/game.o lib/tools.o \
-
 $(LINK_FLAGS)
 copy: $(PROG_NAME).v64
 	cp $(PROG_NAME).v64 ~/public_html/

@@ -22,7 +22,7 @@ int main(void)
 	//int SOUND_MUSIC = 0;//, SOUND_EFFECT = 1; //, SOUND_EDD_DOING = 2;
 	tools_init("2.4.3", disp, TRUE, TRUE, FALSE);
 	//sound_init(soundFiles, 4, 4);
-	int numItems = 13;
+	int numItems = 14;
 	sprite_t* tracer_sprite = gfx_sprite_scale(gfx_load_sprite("tracer.sprite"), BILINEAR, 0.5f, TRUE, FALSE);
 	sprite_t* tracer_sprite_O = gfx_sprite_scale(gfx_load_sprite("tracer.sprite"), BILINEAR, 0.5f, TRUE, FALSE);
 
@@ -37,12 +37,20 @@ int main(void)
 	sprite_t* sweatSmileSprite = gfx_load_sprite("sweatSmile_72x72.sprite");
 	sprite_t* sweatSmileSprite_O = gfx_load_sprite("sweatSmile_72x72.sprite");
 
+	int animatedScaling = 0; 		// either 0 for gfx_scale or 1 for gfx_scale_2
+	float animatedScalingFactor = 1; 	// between 0 and 2
+	float animatedScalingDir = 0.01;	// either 0.01 or -0.01
+
+	int animatedRotating = 0;		// either 0 for gfx_rotate or 1 for gfx_rotate_2
+	int animatedRotatingDeg = 0;		// either 0 for gfx_rotate or 1 for gfx_rotate_2
+	int animatedRotatingDir = 1;	// either -1 or 1
+
 	aniSprite->hslices = 6;
 	aniSprite->vslices = 2;
 	int aniStep = 0;
 	int imgX = 0, imgY = 0, degree = 0;
 	
-	char menuItems[13][40] = { 	{"Move"},
+	char menuItems[14][40] = { 	{"Move"},
 								{"Scale"},
 								{"Rotate"},
 								{"Flip"},
@@ -54,7 +62,8 @@ int main(void)
 								{"Joystick"},
 								{"Distortion"},
 								{"Performance"},
-								{"Pong"}  }; 
+								{"Scale Animated"},
+								{"Rotate Animated"}  }; 
 								
 
 	int debug = 1;
@@ -473,16 +482,12 @@ int main(void)
 				distortCorners[7] = tracer_sprite_O->height;
 				memcpy(tracer_sprite->data, tracer_sprite_O->data, sizeof(tracer_sprite_O->data));
 			} 
-			char msg1[30];
-			snprintf(msg1, 30, "Before@50x50: %lu", tracer_sprite->data[50 + 50 * tracer_sprite->width]);
 			
-			uint32_t deb = fx_sprite_4_point_transform(tracer_sprite_O, tracer_sprite,
+			fx_sprite_4_point_transform(tracer_sprite_O, tracer_sprite,
 										distortCorners[0], distortCorners[1],
 										distortCorners[2], distortCorners[3],
 										distortCorners[4], distortCorners[5],
 										distortCorners[6], distortCorners[7]);
-			char msg2[30];
-			snprintf(msg2, 30, "deb@50x50: %lu", deb);
 			
 			// only change corners if within acceptable bounds
 			if(	distortCorners[selectedCorner] + x_change >= 0 
@@ -493,13 +498,7 @@ int main(void)
 				&& distortCorners[selectedCorner + 1] + y_change < tracer_sprite->height)
 			distortCorners[selectedCorner + 1] += y_change;
 
-			char msg3[30];
-			// bullshit !!
-			snprintf(msg3, 30, "After@50x50: %lu", tracer_sprite->data[50 + 50 * tracer_sprite->width]);
 			graphics_draw_sprite(disp, imgX + ZERO_X, imgY + ZERO_Y, tracer_sprite);
-			graphics_draw_text(disp, 10 + ZERO_X, 110 + ZERO_Y, msg1);
-			graphics_draw_text(disp, 10 + ZERO_X, 135 + ZERO_Y, msg2);
-			graphics_draw_text(disp, 10 + ZERO_X, 160 + ZERO_Y, msg3);
 
 			graphics_draw_box_trans(disp, 
 					imgX + ZERO_X + distortCorners[selectedCorner] - 2, 
@@ -533,6 +532,74 @@ int main(void)
 		} else if(scenario == 12)
 		{
 			keys = get_keys_pressed();
+
+			if(keys.c[0].A) animatedRotating = 0;
+			if(keys.c[0].start) animatedRotating = 1;
+
+			animatedScalingFactor += animatedScalingDir;
+
+			if(animatedScaling)
+			{
+				gfx_sprite_scale_2(sprite1_O, sprite1, BILINEAR, animatedScalingFactor, TRUE, FALSE);
+				gfx_sprite_scale_2(sprite2_O, sprite2, BILINEAR, animatedScalingFactor, TRUE, FALSE);
+				gfx_sprite_scale_2(sweatSmileSprite_O, sweatSmileSprite, BILINEAR, animatedScalingFactor, FALSE, FALSE);
+			} else{
+				tools_free_sprite(sprite1);
+				tools_free_sprite(sprite2);
+				tools_free_sprite(sweatSmileSprite);
+				sprite1 = gfx_sprite_scale(sprite1_O, BILINEAR, animatedScalingFactor, TRUE, FALSE);
+				sprite2 = gfx_sprite_scale(sprite2_O, BILINEAR, animatedScalingFactor, TRUE, FALSE);
+				sweatSmileSprite = gfx_sprite_scale(sweatSmileSprite_O, BILINEAR, animatedScalingFactor, FALSE, FALSE);
+			}
+
+			gfx_draw_merged_sprite(disp, sprite1, imgX + ZERO_X, imgY + ZERO_Y, UPPER_LAYER);
+			gfx_draw_merged_sprite(disp, sprite1, imgX + ZERO_X + 64, imgY + ZERO_Y, LOWER_LAYER);
+
+			gfx_draw_merged_sprite(disp, sprite2, imgX + ZERO_X, imgY + ZERO_Y + 64, UPPER_LAYER);
+			gfx_draw_merged_sprite(disp, sprite2, imgX + ZERO_X + 100, imgY + ZERO_Y + 64, LOWER_LAYER);
+
+			graphics_draw_sprite_trans(disp, imgX + ZERO_X + 128, imgY + ZERO_Y, sweatSmileSprite);
+
+			graphics_draw_text(disp, 10+ZERO_X , 70 +ZERO_Y, "A for scale");
+			graphics_draw_text(disp, 10 +ZERO_X, 90+ZERO_Y , "START for scale_2");
+
+			if(keys.c[0].Z) scenario = -1;
+		} else if(scenario == 13)
+		{
+			keys = get_keys_pressed();
+
+			if(keys.c[0].A) animatedRotating = 0;
+			if(keys.c[0].start) animatedRotating = 1;
+			if(keys.c[0].Z) animatedRotatingDir = -animatedRotatingDir;
+
+			animatedRotatingDeg += animatedRotatingDir;
+
+			if(!animatedRotating)
+			{
+				tools_free_sprite(sprite1);
+				tools_free_sprite(sprite2);
+				tools_free_sprite(sweatSmileSprite);
+				sprite1 = gfx_sprite_rotate(sprite1_O, NEAREST_NEIGHBOUR, animatedRotatingDeg, FALSE);
+				sprite2 = gfx_sprite_rotate(sprite2_O, NEAREST_NEIGHBOUR, animatedRotatingDeg, FALSE);
+				sweatSmileSprite = gfx_sprite_rotate(sweatSmileSprite_O, NEAREST_NEIGHBOUR, animatedRotatingDeg, FALSE);
+			} else
+			{
+				gfx_sprite_rotate_2(sprite1_O, sprite1, NEAREST_NEIGHBOUR, animatedRotatingDeg, FALSE);
+				gfx_sprite_rotate_2(sprite2_O, sprite2, NEAREST_NEIGHBOUR, animatedRotatingDeg, FALSE);
+				gfx_sprite_rotate_2(sweatSmileSprite_O,sweatSmileSprite , NEAREST_NEIGHBOUR, animatedRotatingDeg, FALSE);
+			}
+
+			gfx_draw_merged_sprite(disp, sprite1, imgX + ZERO_X, imgY + ZERO_Y, UPPER_LAYER);
+			gfx_draw_merged_sprite(disp, sprite1, imgX + ZERO_X + 64, imgY + ZERO_Y, LOWER_LAYER);
+
+			gfx_draw_merged_sprite(disp, sprite2, imgX + ZERO_X, imgY + ZERO_Y + 64, UPPER_LAYER);
+			gfx_draw_merged_sprite(disp, sprite2, imgX + ZERO_X + 100, imgY + ZERO_Y + 64, LOWER_LAYER);
+
+			graphics_draw_sprite_trans(disp, imgX + ZERO_X + 128, imgY + ZERO_Y, sweatSmileSprite);
+
+			graphics_draw_text(disp, 10 + ZERO_X, 50 + ZERO_Y, "A for rotate");
+			graphics_draw_text(disp, 10 + ZERO_X, 70 + ZERO_Y, "START for rotate_2");
+			graphics_draw_text(disp, 10 + ZERO_X, 90 + ZERO_Y, "Z change direction");
 
 			if(keys.c[0].Z) scenario = -1;
 		} else
