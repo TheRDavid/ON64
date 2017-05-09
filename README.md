@@ -11,11 +11,11 @@ How to use it
 > (or use a pre-built [Dev-ISO](https://www.neoflash.com/forum/index.php?topic=7444.0) )
 > 2. Download ON64 (no need to install, you'll build the source along with your game)
 > 3. Create a new folder for your game - it should contain:
-> -- <i class="icon-file"></i> game.c *(your main source file)*
-> --<i class="icon-file"></i> Makefile
-> -- <i class="icon-file"></i> clean
-> -- <i class="icon-folder-open"></i> lib *(contains the ON64 source)*
-> -- <i class="icon-folder-open"></i> mips64-elf
+> - <i class="icon-file"></i> game.c *(your main source file)*
+> -<i class="icon-file"></i> Makefile
+> - <i class="icon-file"></i> clean
+> - <i class="icon-folder-open"></i> lib *(contains the ON64 source)*
+> - <i class="icon-folder-open"></i> mips64-elf
 > 4.  Compile using the <i class="icon-cog"></i>**clean** shellscript (```sh clean game```)
 
 Have a look at the demo-apps to get started.
