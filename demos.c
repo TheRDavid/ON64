@@ -428,8 +428,8 @@ int main(void)
 			snprintf(msg, 24, "%dx%d",cursorX, cursorY);
 			if(keys.c[0].x < 0 || keys.c[0].y < 0)
 			{
-				consoleIndex++;
-				tools_print(msg);
+				//consoleIndex++;
+				//tools_print(msg);
 			}
 			graphics_draw_box(disp, cursorX, cursorY,1,1, GFX_COLOR_RED);
 			graphics_draw_text(disp, cursorX - cursorTextSpacing, cursorY - cursorTextSpacing, msg);

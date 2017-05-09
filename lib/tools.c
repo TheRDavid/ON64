@@ -26,7 +26,7 @@ char framesDisplay[30], bytesDisplay[30];
 int displayFPS, displayGfxBytes;
 int auto_scroll;
 int gfxBytes = 0;
-int graphics_memory = 1024 * 1024 * 3.5f; // 3.5 MB
+int graphics_memory = 1024 * 1024 * 3.8f; // 3.5 MB
 
 void tools_init(char *ver, display_context_t d, int showFPS, int showByteAllocation, int console_auto_scroll)
 {

@@ -21,7 +21,7 @@
 #include <sound.h>
 #include <game.h>
 
-#define main_menu_num_items 4
+#define main_menu_num_items 6
 
 typedef struct player
 {
