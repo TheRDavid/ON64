@@ -11,8 +11,8 @@ The aim of this project is to develop a simple library that provides tools to cr
   (or use a pre-built <a href="https://www.neoflash.com/forum/index.php?topic=7444.0">Dev-ISO</a> )</li>
   <li>Download ON64 (no need to install, you’ll build the source along with your game)</li>
   <li>Create a new folder for your game - it should contain: <br>
-  <ul><li><i class="icon-file"></i> game.c <em>(your main source file)</em> <br>
-  -<i class="icon-file"></i> Makefile</li>
+  <ul><li><i class="icon-file"></i> game.c <em>(your main source file)</em></li>
+  <li><i class="icon-file"></i> Makefile</li>
   <li><i class="icon-file"></i> clean</li>
   <li><i class="icon-folder-open"></i> lib <em>(contains the ON64 source)</em></li>
   <li><i class="icon-folder-open"></i> mips64-elf</li></ul></li>
