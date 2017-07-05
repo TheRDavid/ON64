@@ -28,6 +28,37 @@ int auto_scroll;
 int gfxBytes = 0;
 int graphics_memory = 1024 * 1024 * 3.8f; // 3.5 MB
 
+/**
+ * INITIALIZE ALL THE THINGS
+ * 
+ */
+ /*
+   Function: tools_init
+
+   Initializes all subsystems, must be called to make proper use of the library
+
+   Parameters:
+
+   char* ver - string for version id
+   display_context_t d - reference to display
+   int showFPS - flag for whether or not to display the framerate in debug-mode
+   int showByteAllocation - flag for whether or not to display the memory-usage in debug-mode
+   int showByteAllocation - flag for whether or not the debug-consoleshould scroll automatically
+
+   Returns:
+
+   A pointer to a sprite-instance that contains the image data of the file
+
+   Details:
+
+   	- initializes sprite_loading-queue
+   	- initializes debug-message-array for the debug-console
+   	- initializes the graphics-subsystem
+   	- initializes the timer-subsystem
+   	- initializes the input-subsystem
+   	- initializes the fps-updater
+
+*/
 void tools_init(char *ver, display_context_t d, int showFPS, int showByteAllocation, int console_auto_scroll)
 {
     srand ( time(NULL) );
@@ -69,6 +100,11 @@ void tools_init(char *ver, display_context_t d, int showFPS, int showByteAllocat
 	new_timer(TIMER_TICKS(1000000), TF_CONTINUOUS, sprite_queue_load_next);
 }
 
+/*
+   Function: tools_update
+
+   Update all  requiered subsystems
+*/
 void tools_update()
 {
 	start = timer_ticks();
@@ -76,6 +112,21 @@ void tools_update()
 	sound_update();
 }
 
+ /*
+   Function: tools_show
+
+   Refresh the screen
+
+   Parameters:
+
+   display_context_t display - reference to display
+   int debug - flag for whether or not to show the debug-interface
+   int consoleScroll - how far should the console scroll (>0 -> down, <0 -> up)
+
+   Details:
+
+   	- refreshed the debug- and monitoring-systems and the screen
+*/
 void tools_show(display_context_t display, int debug, int consoleScroll)
 {
 	if(debug)
@@ -153,6 +204,16 @@ void tools_show(display_context_t display, int debug, int consoleScroll)
 	frames++;
 }
 
+/*
+   Function: tools_print
+
+   Print a debug-message on the console
+
+   TODO:
+
+   	- implement ring-buffer so the console won't crash after too many outputs
+
+*/
 void tools_print(char msg[])
 {
 	consoleIndex += currentConsolePrint > 3 ? auto_scroll : 0;
@@ -164,12 +225,22 @@ void tools_print(char msg[])
 	}
 }
 
+ /*
+   Function: fpsUpdater
+
+   Update display text to show frames per second
+*/
 void fpsUpdater()
 {
 	snprintf(framesDisplay, 30, "FPS: %d", frames);
 	frames = 0;
 }
 
+ /*
+   Function: tools_changeGfxBytes
+
+   Keep track of memory usage
+*/
 void tools_changeGfxBytes(int bytes)
 {
 	gfxBytes += bytes;
@@ -177,6 +248,16 @@ void tools_changeGfxBytes(int bytes)
 	snprintf(bytesDisplay, 30, "Mem: %d/%d", gfxBytes, graphics_memory);
 }
 
+ /*
+   Function: tools_free_sprite
+
+   Free sprite & register freed memory
+
+   Parameters:
+
+    - sprite_t* sprite - reference to sprite that shall be freed
+
+*/
 void tools_free_sprite(sprite_t *sprite)
 {
 	if(sprite == NULL) return;
@@ -189,6 +270,19 @@ void tools_free_sprite(sprite_t *sprite)
 	tools_changeGfxBytes(s);
 }
 
+ /*
+   Function: tools_push_to_sprite_queue
+
+   Append a request to the loading queue
+
+   Parameters:
+
+    - char path[] - path to the file on the cartridge
+    - int hslices - number of horizontal slices of animation-franes (if any)
+    - int vslices - number of vertical slices of animation-franes (if any)
+    - sprite_t** buffer - pointer to the buffer to write the data into
+
+*/
 void tools_push_to_sprite_queue(char path[], int hslices, int vslices, sprite_t** buffer) // buggy !
 {
 	if(sprite_loading_queue->append_index == SPRITE_LOADING_QUEUE_MAX)
@@ -209,6 +303,11 @@ void tools_push_to_sprite_queue(char path[], int hslices, int vslices, sprite_t*
 	sprite_loading_queue->append_index++;
 }
 
+/*
+   Function: sprite_queue_load_next
+
+   Load the next element in queue from the cardridge
+*/
 void sprite_queue_load_next()
 {
 	if(sprite_loading_queue->append_index == 0)
@@ -255,6 +354,11 @@ void sprite_queue_load_next()
 	}
 }
 
+ /*
+   Function: sprite_queue_shift
+
+   Shifts the queue by one after an element was loaded
+*/
 void sprite_queue_shift()
 {
 	for(int i = 0 ; i < sprite_loading_queue->append_index - 1; i++)

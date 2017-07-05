@@ -13,6 +13,24 @@
 #include <math.h>
 #include <effects.h>
 
+/*
+	Function: fx_sprite_fade
+
+	Fades a sprite-image
+
+	Parameters:
+
+    	sprite_t* sprite - Pointer to the sprite-instance
+    	int offset - Offset from current state (negative to fade out, positive to fade in)
+    	int merged (bool) - Flag for whether or not the sprite consists of two merged images
+
+	Details:
+
+		- Raises / reduces all three channel (r,g,b) by the offset.
+		- Makes sure not to go below 0 or over 255.
+		- Goes to the bit-level if there are two layers of graphics contained.
+
+*/
 void fx_sprite_fade(sprite_t* sprite, int offset, int merged)
 {
 	int idxMax = sprite->width * sprite->height;
@@ -26,22 +44,23 @@ void fx_sprite_fade(sprite_t* sprite, int offset, int merged)
 			int colorLg = (data[idx] >> 4) & 0b111;
 			int colorLr = (data[idx] >> 10) & 0b11;
 			int colorLb = (data[idx] & 0b11);
+
 			if(colorUb + offset >= 0 && colorUb + offset < 4) // max of 2 bits
 					colorUb = colorUb + offset;
 
-				if(colorUg + offset >= 0 && colorUg + offset < 8) // max of 3 bits
-					colorUg = colorUg + offset;
+			if(colorUg + offset >= 0 && colorUg + offset < 8) // max of 3 bits
+				colorUg = colorUg + offset;
 
-				if(colorUr + offset >= 0 && colorUr + offset < 4) // max of 2 bits
-					colorUr = colorUr + offset;
+			if(colorUr + offset >= 0 && colorUr + offset < 4) // max of 2 bits
+				colorUr = colorUr + offset;
 
-				if(colorLb + offset >= 0 && colorLb + offset < 4) // max of 2 bits
-					colorLb = colorLb + offset;
+			if(colorLb + offset >= 0 && colorLb + offset < 4) // max of 2 bits
+				colorLb = colorLb + offset;
 
-				if(colorLg + offset >= 0 && colorLg + offset < 8) // max of 3 bits
-					colorLg = colorLg + offset;
+			if(colorLg + offset >= 0 && colorLg + offset < 8) // max of 3 bits
+				colorLg = colorLg + offset;
 
-				if(colorLr + offset >= 0 && colorLr + offset < 4) // max of 2 bits
+			if(colorLr + offset >= 0 && colorLr + offset < 4) // max of 2 bits
 					colorLr = colorLr + offset;
 			
 			data[idx] =  	/*upper alpha*/	 (data[idx] & 0b1000000000000000)
@@ -92,10 +111,24 @@ void fx_sprite_fade(sprite_t* sprite, int offset, int merged)
 		}
 	}
 }
-/**
- * Irrelevant for now - only works for 32 bit!
- * 16-bit colors only leave 1 bit for the alpha channel, not much to fade there...
- */
+
+/*
+	Function: fx_sprite_fade_alpha
+
+		Fades only the Alpha-Channel of the given sprite. Currently irrelevant - only works for 32-bit.
+		16-bit colors only leave 1 bit for the alpha-value, not much to fade there...
+
+	Parameters:
+
+		sprite_t* sprite - Pointer to the sprite-instance
+		int alphaOffset - Offset from current state (negative to fade out, positive to fade in)
+
+	Details:
+
+		- Raises / reduces the alpha-channel by the offset.
+		- Makes sure not to go below 0 or over 255.
+		- Does not consider merged sprites as a possibility.
+*/
 void fx_sprite_fade_alpha(sprite_t* sprite, int alphaOffset)
 {
 	int idxMax = sprite->width * sprite->height;
@@ -116,6 +149,31 @@ void fx_sprite_fade_alpha(sprite_t* sprite, int alphaOffset)
 	}
 }
 
+/*
+	Function: fx_sprite_4_point_transform
+
+		Transforms the source-sprite by translating the corner-coordinates, thus distorting the whole image.
+		The new corner-coordinates are assigned clockwise.
+
+	Parameters:
+
+		sprite_t* source - Pointer to the source-sprite, which contains the pixel-data
+		sprite_t* dest - Pointer to the destination-sprite, into which the distorted data will be stored
+		int ax - X - coordinate of the first (upper-left) corner
+		int ay - Y - coordinate of the first (upper-left) corner
+		int bx - X - coordinate of the second (upper-right) corner
+		int by - Y - coordinate of the second (upper-right) corner
+		int cx - X - coordinate of the third (lower-right) corner
+		int cy - Y - coordinate of the third (lower-right) corner
+		int dx - X - coordinate of the fourth (lower-left) corner
+		int dy - Y - coordinate of the fourth (lower-left) corner
+
+	Details:
+
+		- Elaborate explanation: https://medium.com/@fulumbler/4-point-distortion-df458207ca55
+		- Does Forward-Mapping (yeah, I know, sorry)
+		- Is pretty cool though
+*/
 void fx_sprite_4_point_transform(sprite_t* source, sprite_t* dest,
 										int ax, int ay,
 										int bx, int by,

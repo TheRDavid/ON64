@@ -27,6 +27,16 @@
 int hardwareUsed = 0;
 int textureSlot = 0;
 
+/*
+   Function: gfx_init
+
+   Initializes all the predefined colors and sets the global bit-depth (though 16 is strongly recommended)
+
+   Parameters:
+
+      int bpp - how many bits per pixel -> 16 probably ;) 
+
+*/
 void gfx_init(int bpp)
 {
 	bitDepth = bpp;
@@ -51,12 +61,35 @@ void gfx_init(int bpp)
 	gfx_init_sin_cos();
 }
 
+/*
+   Function: gfx_finish
+
+   Flush hardware-operations
+*/
 void gfx_finish()
 {
 	if(hardwareUsed) rdp_detach_display();
 	hardwareUsed = 0;
 }
 
+ /*
+   Function: gfx_load_sprite
+
+   Load a sprite-file from the cartridge into RAM
+
+   Parameters:
+
+   char* name - name of the image-file
+
+   Returns:
+
+   A pointer to a sprite-instance that contains the image data of the file
+
+   Details:
+
+   - Registers memory usage
+   - prints console-error on failure
+*/
 sprite_t* gfx_load_sprite(char* name)
 {
 	int fp = dfs_open(name);
@@ -72,6 +105,25 @@ sprite_t* gfx_load_sprite(char* name)
 	return newSprite;
 }
 
+ /*
+   Function: gfx_load_sprite_into_buffer
+
+   Load a sprite-file from the cartridge into a buffer
+
+   Parameters:
+
+   char* name - name of the image-file
+   sprite_t **buffer - buffer to load the sprite into
+
+   Returns:
+
+   Flag whether or not the function succeeded
+
+   Details:
+
+   - Registers memory usage
+   - prints console-error on failure
+*/
 int gfx_load_sprite_into_buffer(char *name, sprite_t **buffer)
 {	
 	int fp = dfs_open(name);
@@ -86,6 +138,23 @@ int gfx_load_sprite_into_buffer(char *name, sprite_t **buffer)
 	return 0;
 }
 
+ /*
+   Function: gfx_copy_sprite
+
+   Creates a deep copy of the original sprite
+
+   Parameters:
+
+   sprite_t* original - the sprite to copy from
+
+   Returns:
+
+   A copy of the original
+
+   Details:
+
+   - Loops through pixel-array, copying the integers one by one (not optimal I guess)
+*/
 sprite_t* gfx_copy_sprite(sprite_t* original)
 {
 	int size = sizeof(uint16_t) 
@@ -107,6 +176,26 @@ sprite_t* gfx_copy_sprite(sprite_t* original)
 	return newSprite;
 }
 
+ /*
+   Function: gfx_sprite_scale_2
+
+   Scales by the given factor according to the given mode
+
+   Parameters:
+
+   sprite_t* source - the sprite containing the original data
+   sprite_t* dest - buffer for the scaled data
+   gfx_interpolationMode mode - scaling mode (BILINEAR or nearest neighbour)
+   float factor - factor by which to scale the image
+   int merged - is it a compressed sprite? (influences bilinear interpolation)
+   int freeOriginal - flag for whether or not free the memory of the original sprite
+
+   Details:
+
+   - takes up to 4 of the sorrounding pixels to interpolate (when mode is bilinear)
+   - takes merged sprites into consideration and goes to the bit-level if requiered
+
+*/
 void gfx_sprite_scale_2(sprite_t* source, sprite_t* dest, gfx_interpolationMode mode, float factor, int merged, int freeOriginal)
 {
 	uint16_t *newData = (uint16_t *) dest->data;
@@ -331,6 +420,27 @@ void gfx_sprite_scale_2(sprite_t* source, sprite_t* dest, gfx_interpolationMode 
 	}
 }
 
+ /*
+   Function: gfx_sprite_scale
+
+   Scales by the given factor according to the given mode
+
+   Parameters:
+
+   sprite_t* sprite - the sprite to scale
+   gfx_interpolationMode mode - scaling mode (BILINEAR or nearest neighbour)
+   float factor - factor by which to scale the image
+   int merged - is it a compressed sprite? (influences bilinear interpolation)
+   int freeOriginal - flag for whether or not free the memory of the original sprite
+
+   Returns:
+
+   the new sprite (since it has a new array)
+
+   Deatils:
+
+   - Calls gfx_sprite_scale_2() to do the heavy lifting
+*/
 sprite_t* gfx_sprite_scale(sprite_t* sprite, gfx_interpolationMode mode, float factor, int merged, int freeOriginal)
 {	
 	uint16_t newWidth = (uint16_t) round(sprite->width * factor);
@@ -355,6 +465,28 @@ sprite_t* gfx_sprite_scale(sprite_t* sprite, gfx_interpolationMode mode, float f
 	return newSprite;
 }
 
+ /*
+   Function: gfx_sprite_rotate_2
+
+   Scales by the given factor according to the given mode
+
+   Parameters:
+
+   sprite_t* source - the sprite containing the original data
+   sprite_t* dest - buffer for the scaled data
+   gfx_interpolationMode mode - scaling mode (BILINEAR or nearest neighbour)
+   int deg - number of degrees to rotate by
+   int freeOriginal - flag for whether or not free the memory of the original sprite
+
+   Details:
+
+   - does not concern itself with adjusting the image's dimension!
+
+   TODO:
+   
+   - implement bilinear interpolation
+
+*/
 void gfx_sprite_rotate_2(sprite_t* source, sprite_t* dest, gfx_interpolationMode mode, int deg, int freeOriginal)
 {
 
@@ -407,6 +539,31 @@ void gfx_sprite_rotate_2(sprite_t* source, sprite_t* dest, gfx_interpolationMode
 	}
 }
 
+ /*
+   Function: gfx_sprite_rotate
+
+   Rotates by the given number of degrees according to the given mode
+
+   Parameters:
+
+   sprite_t* sprite - the sprite to scale
+   gfx_interpolationMode mode - interpolation mode (BILINEAR or nearest neighbour)
+   int deg - number of degrees to rotate by
+   int freeOriginal - flag for whether or not free the memory of the original sprite
+
+   Returns:
+
+   the new sprite (since it has a new array)
+
+   Details:
+
+   - does not concern itself with adjusting the image's dimension!
+   - calls gfx_sprite_rotate_2() to do the heavy lifting
+
+   TODO:
+   
+   - implement bilinear interpolation
+*/ 
 sprite_t* gfx_sprite_rotate(sprite_t* sprite, gfx_interpolationMode mode, int deg, int freeOriginal)
 {				
 	sprite_t* newSprite = malloc(sizeof(sprite_t) + sizeof(uint16_t) 
@@ -427,6 +584,20 @@ sprite_t* gfx_sprite_rotate(sprite_t* sprite, gfx_interpolationMode mode, int de
 	return newSprite;
 }
 
+ /*
+   Function: gfx_sprite_vflip
+
+   Flips the given sprite vertically
+
+   Parameters:
+
+   sprite_t* sprite - the sprite that is supposed to be flipped
+
+   Details:
+
+   - Does not create a new sprite or requiere a buffer, since the pixels can simply be switched
+
+*/
 void gfx_sprite_vflip(sprite_t *sprite)
 {
 	if(bitDepth == 2)
@@ -464,6 +635,20 @@ void gfx_sprite_vflip(sprite_t *sprite)
 	}
 }
 
+ /*
+   Function: gfx_sprite_hflip
+
+   Flips the given sprite horizontally
+
+   Parameters:
+
+   sprite_t* sprite - the sprite that is supposed to be flipped
+
+   Details:
+
+   - Does not create a new sprite or requiere a buffer, since the pixels can simply be switched
+
+*/
 void gfx_sprite_hflip(sprite_t *sprite)
 {
 	if(bitDepth == 2)
@@ -507,6 +692,28 @@ void gfx_sprite_hflip(sprite_t *sprite)
 	}
 }
 
+ /*
+   Function: gfx_draw_circle
+
+   Draws a circle
+
+   Parameters:
+
+   - display_context_t display - display reference
+   - uint16_t x, y - coordinates
+   - uint16_t radius
+   - uint16_t color
+   - int8_t fill - flag whether to fill the geometry or only draw
+
+   Details: 
+
+	Uses Bresenham's circle algorithm
+
+   TODO:
+
+   - version with a cicle-struct as parameter
+
+*/
 void gfx_draw_circle(display_context_t display, uint16_t x0, uint16_t y0, uint16_t radius, uint16_t color, int8_t fill)
 {
 	int x = radius;
@@ -554,6 +761,28 @@ void gfx_draw_circle(display_context_t display, uint16_t x0, uint16_t y0, uint16
 	}
 }
 
+ /*
+   Function: gfx_draw_rectangle
+
+   Draws a rectangle
+
+   Parameters:
+
+   - display_context_t display - display reference
+   - uint16_t x, y - coordinates
+   - uint16_t width, height - dimension
+   - uint16_t color
+   - int8_t fill - flag whether to fill the geometry or only draw
+
+   Details:
+
+   - Relies on the libdragon graphics_draw_box()-function when fill is set to TRUE (1)
+
+   TODO:
+
+   - version with a rectangle-struct as parameter
+
+*/
 void gfx_draw_rectangle(display_context_t display, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color, int8_t fill)
 {
 	if(fill)
@@ -569,6 +798,25 @@ void gfx_draw_rectangle(display_context_t display, uint16_t x, uint16_t y, uint1
 	}
 }
 
+ /*
+   Function: gfx_draw_triangle
+
+   Draws a triangle
+
+   Parameters:
+
+   - display_context_t display - display reference
+   - uint16_t x0, y0 - coordinates of first corner
+   - uint16_t x1, y1 - coordinates of second corner
+   - uint16_t x2, y2 - coordinates of third corner
+   - uint16_t color
+   - int8_t fill - flag whether to fill the geometry or only draw
+
+   TODO:
+
+   - version with a triangle-struct as parameter
+
+*/
 void gfx_draw_triangle(	display_context_t disp, uint16_t x_0, uint16_t y_0,
 						uint16_t x_1, uint16_t y_1,
 						uint16_t x_2, uint16_t y_2, 
@@ -659,6 +907,23 @@ void gfx_draw_triangle(	display_context_t disp, uint16_t x_0, uint16_t y_0,
 	}
 }
 
+ /*
+   Function: gfx_draw_merged_sprite_stride
+
+   Draws certain frame of a merged sprite-animation
+
+   Parameters:
+
+   - display_context_t display - display reference
+   - sprite_t* sprite
+   - uint16_t x, y - coordinates 
+   - uint16_t offset - frame of animation to be drawn
+
+   Details:
+
+   - Draws the upper layer (left bits) first, the lower (right) bits second, allowing twice the amount of frames
+
+*/
 void gfx_draw_merged_sprite_stride(display_context_t display, sprite_t* sprite, uint16_t x, uint16_t y, uint16_t offset) // offset = 4
 {
 	int twidth = sprite->width / sprite->hslices; 										// 320
@@ -727,6 +992,19 @@ void gfx_draw_merged_sprite_stride(display_context_t display, sprite_t* sprite, 
 	}
 }
 
+  /*
+   Function: gfx_draw_merged_sprite
+
+   Draws only one layer of a merged sprite
+
+   Parameters:
+
+   - display_context_t display - display reference
+   - sprite_t* sprite
+   - uint16_t x, y - coordinates 
+   - uint8_t offset - either UPPER_LAYER (0) or LOWER_LAYER (1)
+
+*/
 void gfx_draw_merged_sprite(display_context_t display, sprite_t* sprite, uint16_t x, uint16_t y, uint8_t layer)
 {
 	uint16_t *data = (uint16_t *) sprite->data;
@@ -771,6 +1049,22 @@ void gfx_draw_merged_sprite(display_context_t display, sprite_t* sprite, uint16_
 	}
 }
 
+   /*
+   Function: gfx_draw_sprite_hardware
+
+   Supposedly draws a sprite extra fast (not yet tested), only up to 4KB though!!
+
+   Parameters:
+
+   - display_context_t display - display reference
+   - sprite_t* sprite
+   - uint16_t x, y - coordinates 
+
+   TODO:
+
+   - Test for performance!
+
+*/
 void gfx_draw_sprite_hardware(display_context_t display, sprite_t* sprite, int x, int y)
 {
 	if(1)
@@ -786,6 +1080,12 @@ void gfx_draw_sprite_hardware(display_context_t display, sprite_t* sprite, int x
 	rdp_draw_sprite(0, x, y);
 }
 
+    /*
+   Function: gfx_init_sin_cos
+
+  Init precalculated sin and cos - values
+
+*/
 void gfx_init_sin_cos()
 {
 	preSin[0] = 0.0;

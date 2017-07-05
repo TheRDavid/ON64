@@ -1,5 +1,22 @@
 #include <game.h>
 
+/*
+   Function: run_screen
+
+   Launches a SCREEN
+
+   Parameters:
+
+      SCREEN *screen - Pointer to the screen-instance
+
+   Details:
+
+      - Loops given screen while active
+      - Calls calc- and draw-function
+      - Exits once screen is inactive
+      - Updates Video-Display
+    
+*/
 void run_screen(SCREEN *screen)
 {
     screen->active = TRUE;
@@ -12,10 +29,4 @@ void run_screen(SCREEN *screen)
 		tools_show(screen->display, screen->debug, 0);
     }
     screen->exit(screen);
-}
-
-void run_new_screen(SCREEN *screen, SCREEN *previous)
-{
-    //free(previous);
-    run_screen(screen);
 }

@@ -1,0 +1,12 @@
+1.52
+C/C++
+/home/xyz/Desktop/N64SDK/N64_DevBase/lib/game.c	1499276441	1	run_screen
+/home/xyz/Desktop/N64SDK/N64_DevBase/lib/tools.h	1499284379	1	sprite_queue
+/home/xyz/Desktop/N64SDK/N64_DevBase/lib/effects.c	1499276135	1	/home/xyz/Desktop/N64SDK/N64_DevBase/lib/effects.c
+/home/xyz/Desktop/N64SDK/N64_DevBase/lib/grafix.c	1499282151	1	/home/xyz/Desktop/N64SDK/N64_DevBase/lib/grafix.c
+/home/xyz/Desktop/N64SDK/N64_DevBase/lib/effects.h	1499276240	1	/home/xyz/Desktop/N64SDK/N64_DevBase/lib/effects.h
+/home/xyz/Desktop/N64SDK/N64_DevBase/lib/sound.c	1499283035	1	/home/xyz/Desktop/N64SDK/N64_DevBase/lib/sound.c
+/home/xyz/Desktop/N64SDK/N64_DevBase/lib/grafix.h	1499281230	1	/home/xyz/Desktop/N64SDK/N64_DevBase/lib/grafix.h
+/home/xyz/Desktop/N64SDK/N64_DevBase/lib/sound.h	1499283018	1	/home/xyz/Desktop/N64SDK/N64_DevBase/lib/sound.h
+/home/xyz/Desktop/N64SDK/N64_DevBase/lib/tools.c	1499284436	1	/home/xyz/Desktop/N64SDK/N64_DevBase/lib/tools.c
+/home/xyz/Desktop/N64SDK/N64_DevBase/lib/game.h	1499276677	1	SCREEN

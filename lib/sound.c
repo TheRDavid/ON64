@@ -12,8 +12,29 @@
 #include <tools.h>
 #include <sound.h>
 
+
+ /*
+   Function: sound_init
+
+   Initializes the sound-subsystem of libdragon
+
+   Parameters:
+
+   char* list[25] - names of the sound files
+   int nSounds - number of sounds
+   int nSounds - number of voices
+
+   Returns:
+
+   A pointer to a sprite-instance that contains the image data of the file
+
+   TODO:
+
+   - make it less ugly
+
+*/
 void sound_init(char *list[25], int nSounds, int nVoices)
-{
+{ 
 	soundNameList = list;
 	tools_print("Sounds:");
 	for(int i = 0; i < nSounds; i++)
@@ -55,11 +76,37 @@ void sound_init(char *list[25], int nSounds, int nVoices)
     MikMod_EnableOutput();
 }
 
+ /*
+   Function: sound_update
+
+   Only exists to wrap the oddly sounding mikmod command
+
+   TODO:
+
+   - maybe... get rid of it??
+
+*/
 void sound_update()
 {
 	MikMod_Update();
 }
 
+
+ /*
+   Function: sound_playSample
+
+   WOULD play a WAVE-sample if the audio-library supported it...
+
+   Parameters:
+
+   - int index - index of the sample
+
+   TODO:
+
+   - update / patch mikmod!
+   - allow volume control
+
+*/
 void sound_playSample(int index)
 {
 	/*char msg0[256];
@@ -83,6 +130,22 @@ void sound_playSample(int index)
 	tools_print(msg);	*/
 }
 
+ /*
+   Function: sound_playAlone
+
+   WOULD play a WAVE-sample if the audio-library supported it...
+   Also mutes all other samples
+
+   Parameters:
+
+   - int index - index of the sample
+
+   TODO:
+
+   - update / patch mikmod!
+   - allow volume control
+
+*/
 void sound_playAlone(int index)
 {
 	/*for(int i = 0; i < numVoices; i++)
@@ -101,6 +164,21 @@ void sound_playAlone(int index)
 	Voice_SetVolume(v2, 255);
 }
 
+
+ /*
+   Function: sound_playModule
+
+   Plays module
+
+   Parameters:
+
+   - int index - index of the module
+
+   Details:
+
+   - this actually works :O
+
+*/
 void sound_playModule(int index)
 {
 	MODULE *module;
